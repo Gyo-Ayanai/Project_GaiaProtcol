@@ -3,8 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>事前登録 - Gyo Games</title>
+  <title>事前登録 - GaiaProtocol</title>
   <link rel="stylesheet" href="style.css">
+  <script src="https://download.playfab.com/PlayFabClientApi.js"></script>
 </head>
 <body>
   <header>
@@ -19,18 +20,48 @@
   </header>
 
   <main>
-    <h1>事前登録</h1>
-    <p>正式リリースに向け、事前登録受付中！<br>
-    登録して最新情報をゲットしよう。</p>
+    <h1>アカウント事前登録</h1>
+    <p>メールアドレスとパスワードを入力して、<br>リリース時に使えるアカウントを作成しよう！</p>
 
-    <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSf-XXXXXXXXX/viewform?embedded=true"
-            width="90%" height="600" frameborder="0" marginheight="0" marginwidth="0">
-      読み込み中…
-    </iframe>
+    <form id="registerForm">
+      <input type="email" id="email" placeholder="メールアドレス" required><br>
+      <input type="password" id="password" placeholder="パスワード（6文字以上）" required><br>
+      <button type="submit">登録する</button>
+    </form>
+
+    <p id="result" style="margin-top: 20px; color: #f0a500;"></p>
   </main>
 
   <footer>
-    <p>© 2025 Gyo Games</p>
+    <p>© 2025 GaiaProtocol</p>
   </footer>
+
+  <script>
+    const titleId = "1FEC7E"; // ← あなたのPlayFabタイトルIDに置き換える
+    PlayFab.settings.titleId = titleId;
+
+    document.getElementById("registerForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      const result = document.getElementById("result");
+
+      const registerRequest = {
+        Email: email,
+        Password: password,
+        RequireBothUsernameAndEmail: false
+      };
+
+      PlayFabClientSDK.RegisterPlayFabUser(registerRequest, function (response, error) {
+        if (response && response.data) {
+          result.innerText = "✅ 登録完了しました！ようこそ、" + email + " さん！";
+          document.getElementById("registerForm").reset();
+        } else {
+          result.innerText = "⚠️ 登録失敗: " + error.errorMessage;
+        }
+      });
+    });
+  </script>
 </body>
 </html>
