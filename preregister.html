@@ -18,69 +18,24 @@
       </ul>
     </nav>
   </header>
-
+  
   <main>
-    <h1>アカウント事前登録</h1>
-    <p>メールアドレスとパスワードを入力して、<br>リリース時に使えるアカウントを作成しよう！</p>
+    <h1>『Gaia Protocol』</h1>
+    <p>FPS × 未来都市 × 超能力。2026年リリース予定！</p>
+    <img src="images/logo.png" alt="ゲームロゴ" width="300">
 
-    <form id="registerForm">
-      <input type="email" id="email" placeholder="メールアドレス" required><br>
-      <input type="password" id="password" placeholder="パスワード（6文字以上）" required><br>
-      <button type="submit">登録する</button>
-    </form>
-
-    <p id="result" style="margin-top: 20px; color: #f0a500;"></p>
+    <p style="margin-top: 40px;">
+      <a href="preregister_form.html" target="_blank">
+        <button>事前登録する</button>
+      </a>
+    </p>
   </main>
+
 
   <footer>
     <p>© 2025 GaiaProtocol</p>
   </footer>
 
-  <script>
-    const titleId = "1FEC7E"; // ← あなたのPlayFabタイトルIDに置き換える
-    const web3formsKey = "あなたのAccessKey"; // ← Web3FormsのAccess Key
-
-    PlayFab.settings.titleId = titleId;
-
-    document.getElementById("registerForm").addEventListener("submit", async function (e) {
-      e.preventDefault();
-
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-      const result = document.getElementById("result");
-
-      // PlayFab登録
-      const registerRequest = {
-        Email: email,
-        Password: password,
-        RequireBothUsernameAndEmail: false
-      };
-
-      PlayFabClientSDK.RegisterPlayFabUser(registerRequest, async function (response, error) {
-        if (response && response.data) {
-          result.innerText = "✅ 登録完了！確認メールを送信中…";
-
-          // ありがとうメール送信
-          await fetch("https://api.web3forms.com/submit", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              access_key: web3formsKey,
-              subject: "【Gaia運営チーム】事前登録ありがとうございます！",
-              from_name: "Gaia Protocol",
-              to: email,
-              message: `この度は『Gaia Protocol』に事前登録いただき、ありがとうございます！\n\n正式リリースをどうぞお楽しみに！\n\n- Gaia Protocol 開発チーム`
-            })
-          });
-
-          result.innerText = "🎉 登録完了！確認メールを送信しました。";
-          document.getElementById("registerForm").reset();
-
-        } else {
-          result.innerText = "⚠️ 登録失敗: " + error.errorMessage;
-        }
-      });
-    });
-  </script>
+  
 </body>
 </html>
