@@ -5,8 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>事前登録 - GaiaProtocol</title>
   <link rel="stylesheet" href="style.css">
-  <script src="https://download.playfab.com/PlayFabClientApi.js"></script>
+
+  <!-- ✅ PlayFabブラウザ用SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/playfab-sdk/Scripts/PlayFabClientApi.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/playfab-sdk/Scripts/PlayFab.js"></script>
 </head>
+
 <body>
   <main>
     <h1>アカウント事前登録</h1>
@@ -27,8 +31,8 @@
   </footer>
 
   <script>
-    const titleId = "1FEC7E"; // ← PlayFabタイトルIDに置き換える
-    const web3formsKey = "96cfe88e-9989-49d8-b3b7-3c4d88fb821c"; // ← Web3FormsのAccess Key
+    const titleId = "あなたのPlayFabタイトルID"; // ←実際のIDに変更
+    const web3formsKey = "96cfe88e-9989-49d8-b3b7-3c4d88fb821c";
 
     PlayFab.settings.titleId = titleId;
 
@@ -40,7 +44,6 @@
       const password = document.getElementById("password").value;
       const result = document.getElementById("result");
 
-      // PlayFab登録
       const registerRequest = {
         Email: email,
         Password: password,
@@ -48,18 +51,18 @@
         RequireBothUsernameAndEmail: true
       };
 
-      PlayFabClientSDK.RegisterPlayFabUser(registerRequest, async function(response, error) {
-        if (response && response.data) {
+      PlayFabClientSDK.RegisterPlayFabUser(registerRequest,
+        async function(response) {
           result.innerText = "✅ 登録完了！確認メールを送信中…";
 
-          // ありがとうメール送信
+          // Web3Formsでメール送信
           await fetch("https://api.web3forms.com/submit", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               access_key: web3formsKey,
               subject: "【GaiaProtocol運営】事前登録ありがとうございます！",
-              from_name: GaiaProtocol",
+              from_name: "GaiaProtocol",
               to: email,
               message: `こんにちは ${username} さん！\n\n『Gaia Protocol』に事前登録いただきありがとうございます！\n\n正式リリースを楽しみにお待ちください。\n\n- GaiaProtocol開発チーム`
             })
@@ -67,18 +70,13 @@
 
           result.innerText = "🎉 登録完了！確認メールを送信しました。";
           document.getElementById("registerForm").reset();
-
-        } else {
+        },
+        function(error) {
           result.innerText = "⚠️ 登録失敗: " + error.errorMessage;
+          console.error(error);
         }
-      });
+      );
     });
   </script>
 </body>
 </html>
-
-
-
-
-
-
