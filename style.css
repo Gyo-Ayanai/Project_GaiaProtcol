@@ -1,5 +1,7 @@
 /* ===== 🌠 全体 ===== */
 body {
+  display: flex;
+  justify-content: center;
   margin: 0;
   padding: 0;
   font-family: "Noto Sans JP", sans-serif;
@@ -64,6 +66,8 @@ header {
 
 /* ===== 🌙 タイトルなど ===== */
 h1 {
+  display: flex;
+  justify-content: center;
   font-size: 2.8rem;
   margin-top: 60px;
   color: #dbe4ff;
@@ -71,6 +75,8 @@ h1 {
 }
 
 p {
+  display: flex;
+  justify-content: center;
   font-size: 1.2rem;
   line-height: 1.8;
   color: #cbd5ff;
@@ -78,6 +84,8 @@ p {
 
 /* ===== ✨ ボタン ===== */
 button {
+  display: flex;
+  justify-content: center;
   background: linear-gradient(90deg, #4b5eff, #8f7bff);
   border: none;
   color: white;
