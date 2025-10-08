@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>事前登録 - Gyo Games</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://download.playfab.com/PlayFabClientApi.js"></script>
+</head>
+<body>
+  <main>
+    <h1>PlayFabアカウント事前登録</h1>
+    <p>メールアドレス、ユーザー名、パスワードを入力してください。</p>
+
+    <form id="registerForm">
+      <input type="email" id="email" placeholder="メールアドレス" required><br>
+      <input type="text" id="username" placeholder="ユーザー名" required><br>
+      <input type="password" id="password" placeholder="パスワード（6文字以上）" required><br>
+      <button type="submit">登録する</button>
+    </form>
+
+    <p id="result" style="margin-top: 20px; color: #f0a500;"></p>
+  </main>
+
+  <footer>
+    <p>© 2025 Gyo Games</p>
+  </footer>
+
+  <script>
+    const titleId = "1FEC7E"; // ← PlayFabタイトルIDに置き換える
+    const web3formsKey = "96cfe88e-9989-49d8-b3b7-3c4d88fb821c"; // ← Web3FormsのAccess Key
+
+    PlayFab.settings.titleId = titleId;
+
+    document.getElementById("registerForm").addEventListener("submit", async function(e) {
+      e.preventDefault();
+
+      const email = document.getElementById("email").value;
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
+      const result = document.getElementById("result");
+
+      // PlayFab登録
+      const registerRequest = {
+        Email: email,
+        Password: password,
+        Username: username,
+        RequireBothUsernameAndEmail: true
+      };
+
+      PlayFabClientSDK.RegisterPlayFabUser(registerRequest, async function(response, error) {
+        if (response && response.data) {
+          result.innerText = "✅ 登録完了！確認メールを送信中…";
+
+          // ありがとうメール送信
+          await fetch("https://api.web3forms.com/submit", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              access_key: web3formsKey,
+              subject: "【GaiaProtocol運営】事前登録ありがとうございます！",
+              from_name: GaiaProtocol",
+              to: email,
+              message: `こんにちは ${username} さん！\n\n『Gaia Protocol』に事前登録いただきありがとうございます！\n\n正式リリースを楽しみにお待ちください。\n\n- GaiaProtocol開発チーム`
+            })
+          });
+
+          result.innerText = "🎉 登録完了！確認メールを送信しました。";
+          document.getElementById("registerForm").reset();
+
+        } else {
+          result.innerText = "⚠️ 登録失敗: " + error.errorMessage;
+        }
+      });
+    });
+  </script>
+</body>
+</html>
+
+
+
+
+
+
