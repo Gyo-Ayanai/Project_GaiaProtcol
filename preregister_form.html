@@ -82,7 +82,7 @@
     }
 
     .password-box input {
-      position:relative;
+      position: relative;
       width: 100%;
       padding-right: 40px; /* 👁ボタン分の余白 */
     }
@@ -123,8 +123,8 @@
       <input type="text" id="username" placeholder="ユーザー名" required><br>
 
       <div class="password-box">
-        <input type="password" id="password" placeholder="パスワード（6文字以上）" required>
-        <button type="button" id="togglePassword">🙈</button>
+        <input type="password" id="password" pattern="^([a-zA-Z0-9]{6,})$" placeholder="パスワード（半角英数字6文字以上）" required>
+        <button type="button" id="togglePassword">表示</button>
       </div>
 
       <input type="password" id="confirmPassword" placeholder="パスワード（確認用）" required><br>
@@ -145,17 +145,19 @@
     const web3formsKey = "96cfe88e-9989-49d8-b3b7-3c4d88fb821c";
     PlayFab.settings.titleId = titleId;
 
-document.addEventListener("DOMContentLoaded", function() {
+window.addEventListener("DOMContentLoaded", function() {
   const toggleBtn = document.getElementById("togglePassword");
   const pw = document.getElementById("password");
 
-  toggleBtn.addEventListener("click", function() {
+  toggleBtn.addEventListener("click", (e)=> {
+    e.preventDefault();
+    
     if (pw.type === "password") {
       pw.type = "text";
-      toggleBtn.textContent = "🙈";
+      toggleBtn.textContent = "非表示";
     } else {
       pw.type = "password";
-      toggleBtn.textContent = "👁";
+      toggleBtn.textContent = "表示";
     }
   });
 });
