@@ -194,7 +194,19 @@ window.addEventListener("DOMContentLoaded", function() {
 
       PlayFabClientSDK.RegisterPlayFabUser(registerRequest, async function(response, error) {
         if (response && response.data) {
-          result.innerText = "✅ 登録完了！確認メールを送信中…";
+          result.innerText = "✅ 登録完了！データ保存中…";
+
+        // ✅ PlayFabに「事前登録済み」情報を登録
+          PlayFabClientSDK.UpdateUserData({
+          Data: {
+          pre_registered: "true",
+          register_date: new Date().toISOString()
+          }
+      }, function() {
+        console.log("事前登録データ保存OK");
+      }, function(err) {
+        console.error("事前登録データ保存エラー:", err);
+      });
 
           try {
             await fetch("https://api.web3forms.com/submit", {
