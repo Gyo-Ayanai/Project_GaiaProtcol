@@ -6,9 +6,9 @@
   <title>事前登録 - GaiaProtocol</title>
   <link rel="stylesheet" href="style.css">
 
-  <!-- ✅ PlayFabブラウザ用SDK -->
-  <script src="https://cdn.jsdelivr.net/npm/playfab-sdk/Scripts/PlayFabClientApi.js"></script>
+  <!-- ✅ PlayFab SDK（順番が重要！） -->
   <script src="https://cdn.jsdelivr.net/npm/playfab-sdk/Scripts/PlayFab.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/playfab-sdk/Scripts/PlayFabClientApi.js"></script>
 </head>
 
 <body>
@@ -19,11 +19,18 @@
     <form id="registerForm">
       <input type="email" id="email" placeholder="メールアドレス" required><br>
       <input type="text" id="username" placeholder="ユーザー名" required><br>
-      <input type="password" id="password" placeholder="パスワード（6文字以上）" required><br>
+
+      <div style="position: relative;">
+        <input type="password" id="password" placeholder="パスワード（6文字以上）" required style="width: 80%;">
+        <button type="button" id="togglePassword" style="position: absolute; right: 0;">👁</button>
+      </div><br>
+
+      <input type="password" id="confirmPassword" placeholder="パスワード（確認用）" required><br>
+
       <button type="submit">登録する</button>
     </form>
 
-    <p id="result" style="margin-top: 100px; color: #f0a500;"></p>
+    <p id="result" style="margin-top: 30px; color: #f0a500;"></p>
   </main>
 
   <footer>
@@ -31,19 +38,47 @@
   </footer>
 
   <script>
-    const titleId = "あなたのPlayFabタイトルID"; // ←実際のIDに変更
+    // ✅ あなたのPlayFabタイトルIDをここに
+    const titleId = "1FEC7E";  
     const web3formsKey = "96cfe88e-9989-49d8-b3b7-3c4d88fb821c";
 
     PlayFab.settings.titleId = titleId;
 
+    // 👁 パスワード表示切り替え
+    document.getElementById("togglePassword").addEventListener("click", function() {
+      const pw = document.getElementById("password");
+      if (pw.type === "password") {
+        pw.type = "text";
+        this.textContent = "🙈";
+      } else {
+        pw.type = "password";
+        this.textContent = "👁";
+      }
+    });
+
+    // 🔁 フォーム送信処理
     document.getElementById("registerForm").addEventListener("submit", async function(e) {
       e.preventDefault();
 
-      const email = document.getElementById("email").value;
-      const username = document.getElementById("username").value;
+      const email = document.getElementById("email").value.trim();
+      const username = document.getElementById("username").value.trim();
       const password = document.getElementById("password").value;
+      const confirmPassword = document.getElementById("confirmPassword").value;
       const result = document.getElementById("result");
 
+      // ⚠️ パスワード一致チェック
+      if (password !== confirmPassword) {
+        result.innerText = "⚠️ パスワードが一致しません。";
+        return;
+      }
+
+      // ⚠️ 6文字未満チェック
+      if (password.length < 6) {
+        result.innerText = "⚠️ パスワードは6文字以上にしてください。";
+        return;
+      }
+
+      // ✅ PlayFab登録リクエスト
       const registerRequest = {
         Email: email,
         Password: password,
@@ -51,31 +86,38 @@
         RequireBothUsernameAndEmail: true
       };
 
-      PlayFabClientSDK.RegisterPlayFabUser(registerRequest,
-        async function(response) {
+      result.innerText = "⏳ 登録中…";
+
+      PlayFabClientSDK.RegisterPlayFabUser(registerRequest, async function(response, error) {
+        if (response && response.data) {
           result.innerText = "✅ 登録完了！確認メールを送信中…";
 
-          // Web3Formsでメール送信
-          await fetch("https://api.web3forms.com/submit", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              access_key: web3formsKey,
-              subject: "【GaiaProtocol運営】事前登録ありがとうございます！",
-              from_name: "GaiaProtocol",
-              to: email,
-              message: `こんにちは ${username} さん！\n\n『Gaia Protocol』に事前登録いただきありがとうございます！\n\n正式リリースを楽しみにお待ちください。\n\n- GaiaProtocol開発チーム`
-            })
-          });
+          // 📧 Web3Formsでメール送信
+          try {
+            await fetch("https://api.web3forms.com/submit", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                access_key: web3formsKey,
+                subject: "【GaiaProtocol運営】事前登録ありがとうございます！",
+                from_name: "GaiaProtocol",
+                to: email,
+                message: `こんにちは ${username} さん！\n\n『Gaia Protocol』に事前登録いただきありがとうございます！\n\n正式リリースを楽しみにお待ちください。\n\n- GaiaProtocol開発チーム`
+              })
+            });
 
-          result.innerText = "🎉 登録完了！確認メールを送信しました。";
-          document.getElementById("registerForm").reset();
-        },
-        function(error) {
-          result.innerText = "⚠️ 登録失敗: " + error.errorMessage;
+            result.innerText = "🎉 登録完了！確認メールを送信しました。";
+            document.getElementById("registerForm").reset();
+          } catch (err) {
+            result.innerText = "⚠️ 登録は成功しましたが、メール送信に失敗しました。";
+            console.error(err);
+          }
+
+        } else {
+          result.innerText = "⚠️ 登録失敗: " + (error?.errorMessage || "不明なエラー");
           console.error(error);
         }
-      );
+      });
     });
   </script>
 </body>
