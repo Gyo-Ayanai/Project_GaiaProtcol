@@ -1,135 +1,77 @@
-/* ===== 🌠 全体 ===== */
-body {
-  display: flex;
-  justify-content: center;
-  margin: 0;
-  padding: 0;
-  font-family: "Noto Sans JP", sans-serif;
-  color: #e0e7ff;
-  background: radial-gradient(circle at top, #0a0a1f, #000);
-  background-attachment: fixed;
-  overflow-x: hidden;
+/* ============================= */
+/* 🌠 レスポンシブデザイン設定 */
+/* ============================= */
+
+/* 📱 スマホ（最大幅768pxまで） */
+@media screen and (max-width: 768px) {
+
+  body {
+    flex-direction: column;
+    background: black;
+    overflow: hidden;
+  }
+
+  /* 背景を幅いっぱいの動画に置き換える場合 */
+  body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('https://example.com/space-bg.mp4') center/cover no-repeat;
+    opacity: 0.3;
+    z-index: -1;
+  }
+
+  h1 {
+    font-size: 2rem;
+    margin-top: 40px;
+  }
+
+  p {
+    font-size: 1rem;
+    padding: 0 10px;
+    text-align: center;
+  }
+
+  input {
+    width: 90%;
+    max-width: 360px;
+    font-size: 1.1rem;
+    padding: 14px;
+  }
+
+  button {
+    width: 80%;
+    max-width: 320px;
+    font-size: 1.3rem;
+    padding: 18px;
+    margin-top: 30px;
+  }
+
+  footer {
+    font-size: 0.8rem;
+    margin-top: 60px;
+  }
 }
 
-/* ===== 🌟 星空のアニメーション背景 ===== */
-body::before {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 200%;
-  height: 200%;
-  background: url('https://raw.githubusercontent.com/ValiantWind/assets/main/stars-bg.png') repeat;
-  background-size: cover;
-  opacity: 0.2;
-  animation: starsMove 120s linear infinite;
-  z-index: -1;
+/* 💻 PC（幅769px以上） */
+@media screen and (min-width: 769px) {
+
+  main {
+    width: 60%;
+    margin: 100px auto;
+    text-align: center;
+  }
+
+  input {
+    width: 300px;
+  }
+
+  button {
+    width: 260px;
+    font-size: 1.1rem;
+  }
 }
 
-@keyframes starsMove {
-  from { transform: translate(0, 0); }
-  to { transform: translate(-50%, -50%); }
-}
-
-/* ===== 🚀 ヘッダー・メニュー ===== */
-header {
-  background: rgba(10, 10, 40, 0.8);
-  border-bottom: 1px solid rgba(100, 150, 255, 0.3);
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  backdrop-filter: blur(6px);
-}
-
-.menu {
-  list-style: none;
-  display: flex;
-  justify-content: center;
-  gap: 40px;
-  margin: 0;
-  padding: 16px 0;
-}
-
-.menu a {
-  color: #a8c5ff;
-  text-decoration: none;
-  font-size: 1.2rem;
-  letter-spacing: 0.05em;
-  transition: color 0.3s, text-shadow 0.3s;
-}
-
-.menu a:hover,
-.menu a.active {
-  color: #ffffff;
-  text-shadow: 0 0 8px #7fc9ff;
-}
-
-/* ===== 🌙 タイトルなど ===== */
-h1 {
-  display: flex;
-  justify-content: center;
-  font-size: 2.8rem;
-  margin-top: 60px;
-  color: #dbe4ff;
-  text-shadow: 0 0 10px #709bff;
-}
-
-p {
-  display: flex;
-  justify-content: center;
-  font-size: 1.2rem;
-  line-height: 1.8;
-  color: #cbd5ff;
-}
-
-/* ===== ✨ ボタン ===== */
-button {
-  display: flex;
-  justify-content: center;
-  background: linear-gradient(90deg, #4b5eff, #8f7bff);
-  border: none;
-  color: white;
-  font-size: 1.2rem;
-  padding: 14px 36px;
-  border-radius: 10px;
-  margin-top: 24px;
-  cursor: pointer;
-  box-shadow: 0 0 15px rgba(150, 120, 255, 0.6);
-  transition: transform 0.3s, box-shadow 0.3s;
-}
-
-button:hover {
-  transform: scale(1.08);
-  box-shadow: 0 0 25px rgba(160, 140, 255, 0.9);
-}
-
-/* ===== 🌠 入力フォーム ===== */
-input {
-  display: block;
-  width: 300px;
-  margin: 10px auto;
-  padding: 12px;
-  background: rgba(20, 20, 50, 0.8);
-  border: 1px solid rgba(150, 150, 255, 0.3);
-  border-radius: 6px;
-  color: #e0e7ff;
-  font-size: 1rem;
-  outline: none;
-  transition: border 0.3s, box-shadow 0.3s;
-}
-
-input:focus {
-  border-color: #9faeff;
-  box-shadow: 0 0 10px #7f9cff;
-}
-
-/* ===== 🌌 フッター ===== */
-footer {
-  margin-top: 80px;
-  padding: 20px;
-  text-align: center;
-  color: #9faeff;
-  font-size: 0.9rem;
-  background: rgba(10, 10, 30, 0.7);
-  border-top: 1px solid rgba(100, 150, 255, 0.2);
-}
