@@ -6,9 +6,110 @@
   <title>事前登録 - GaiaProtocol</title>
   <link rel="stylesheet" href="style.css">
 
-  <!-- ✅ PlayFab SDK（順番が重要！） -->
+  <!-- ✅ PlayFab SDK -->
   <script src="https://cdn.jsdelivr.net/npm/playfab-sdk/Scripts/PlayFab.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/playfab-sdk/Scripts/PlayFabClientApi.js"></script>
+
+  <style>
+    /* ====== 基本レイアウト ====== */
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background: radial-gradient(circle at center, #0a0a1a, #000);
+      color: #fff;
+      text-align: center;
+      padding: 30px;
+    }
+
+    h1 {
+      margin-bottom: 10px;
+      color: #88f7ff;
+    }
+
+    p {
+      color: #ccc;
+      margin-bottom: 20px;
+    }
+
+    form {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 25px;
+      border-radius: 10px;
+      display: inline-block;
+      text-align: left;
+      width: 300px;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      border: none;
+      border-radius: 5px;
+      outline: none;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      font-size: 15px;
+    }
+
+    input::placeholder {
+      color: #aaa;
+    }
+
+    button {
+      background: linear-gradient(90deg, #00c3ff, #0078ff);
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 15px;
+      width: 100%;
+    }
+
+    button:hover {
+      background: linear-gradient(90deg, #00eaff, #0090ff);
+    }
+
+    footer {
+      margin-top: 50px;
+      color: #555;
+    }
+
+    /* ====== パスワード入力と目ボタン ====== */
+    .password-box {
+      position: relative;
+    }
+
+    .password-box input {
+      width: 100%;
+      padding-right: 40px; /* 👁ボタン分の余白 */
+    }
+
+    #togglePassword {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: #aaa;
+      font-size: 18px;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    #togglePassword:hover {
+      color: #fff;
+    }
+
+    /* ====== スマホ対応 ====== */
+    @media screen and (max-width: 600px) {
+      form {
+        width: 85%;
+      }
+    }
+  </style>
 </head>
 
 <body>
@@ -20,10 +121,10 @@
       <input type="email" id="email" placeholder="メールアドレス" required><br>
       <input type="text" id="username" placeholder="ユーザー名" required><br>
 
-      <div style="position: relative;">
-        <input type="password" id="password" placeholder="パスワード（6文字以上）" required style="width: 80%;">
-        <button type="button" id="togglePassword" style="position: absolute; right: 0;">👁</button>
-      </div><br>
+      <div class="password-box">
+        <input type="password" id="password" placeholder="パスワード（6文字以上）" required>
+        <button type="button" id="togglePassword">👁</button>
+      </div>
 
       <input type="password" id="confirmPassword" placeholder="パスワード（確認用）" required><br>
 
@@ -38,10 +139,9 @@
   </footer>
 
   <script>
-    // ✅ あなたのPlayFabタイトルIDをここに
+    // ✅ PlayFab設定
     const titleId = "1FEC7E";  
     const web3formsKey = "96cfe88e-9989-49d8-b3b7-3c4d88fb821c";
-
     PlayFab.settings.titleId = titleId;
 
     // 👁 パスワード表示切り替え
@@ -66,19 +166,16 @@
       const confirmPassword = document.getElementById("confirmPassword").value;
       const result = document.getElementById("result");
 
-      // ⚠️ パスワード一致チェック
       if (password !== confirmPassword) {
         result.innerText = "⚠️ パスワードが一致しません。";
         return;
       }
 
-      // ⚠️ 6文字未満チェック
       if (password.length < 6) {
         result.innerText = "⚠️ パスワードは6文字以上にしてください。";
         return;
       }
 
-      // ✅ PlayFab登録リクエスト
       const registerRequest = {
         Email: email,
         Password: password,
@@ -92,7 +189,6 @@
         if (response && response.data) {
           result.innerText = "✅ 登録完了！確認メールを送信中…";
 
-          // 📧 Web3Formsでメール送信
           try {
             await fetch("https://api.web3forms.com/submit", {
               method: "POST",
