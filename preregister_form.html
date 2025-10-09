@@ -11,7 +11,6 @@
   <script src="https://cdn.jsdelivr.net/npm/playfab-sdk/Scripts/PlayFabClientApi.js"></script>
 
   <style>
-    /* ====== 基本レイアウト ====== */
     body {
       font-family: "Segoe UI", sans-serif;
       background: radial-gradient(circle at center, #0a0a1a, #000);
@@ -76,15 +75,13 @@
       color: #555;
     }
 
-    /* ====== パスワード入力と目ボタン ====== */
     .password-box {
       position: relative;
     }
 
     .password-box input {
-      position: relative;
       width: 100%;
-      padding-right: 40px; /* 👁ボタン分の余白 */
+      padding-right: 50px;
     }
 
     #togglePassword {
@@ -95,16 +92,14 @@
       background: none;
       border: none;
       color: #aaa;
-      font-size: 18px;
+      font-size: 14px;
       cursor: pointer;
-      padding: 0;
     }
 
     #togglePassword:hover {
       color: #fff;
     }
 
-    /* ====== スマホ対応 ====== */
     @media screen and (max-width: 600px) {
       form {
         width: 85%;
@@ -118,12 +113,12 @@
     <h1>アカウント事前登録</h1>
     <p>メールアドレス、ユーザー名、パスワードを入力してください。</p>
 
-    <form id="registerForm" method="post" action="">
+    <form id="registerForm">
       <input type="email" id="email" placeholder="メールアドレス" required><br>
       <input type="text" id="username" placeholder="ユーザー名" required><br>
 
       <div class="password-box">
-        <input type="password" id="password" pattern="^([a-zA-Z0-9]{6,})$" placeholder="パスワード（半角英数字6文字以上）" name="password" value="" required>
+        <input type="password" id="password" placeholder="パスワード（6文字以上）" required>
         <button type="button" id="togglePassword">表示</button>
       </div>
 
@@ -140,32 +135,22 @@
   </footer>
 
   <script>
-    // ✅ PlayFab設定
     const titleId = "1FEC7E";  
     const web3formsKey = "96cfe88e-9989-49d8-b3b7-3c4d88fb821c";
     PlayFab.settings.titleId = titleId;
 
-    window.addEventListener("DOMContentLoaded", function() {
-      const toggleBtn = document.getElementById("togglePassword");
-      const pw = document.getElementById("password");
-
-      toggleBtn.addEventListener("click", (e)=> {
-        e.preventDefault();
-    
-        if (pw.type === "password") {
-          pw.type = "text";
-          toggleBtn.textContent = "非表示";
-        } else {
-          pw.type = "password";
-          toggleBtn.textContent = "表示";
-        }
-      });
+    // 👁 パスワード表示切り替え
+    const pw = document.getElementById("password");
+    const toggleBtn = document.getElementById("togglePassword");
+    toggleBtn.addEventListener("click", () => {
+      const isHidden = pw.type === "password";
+      pw.type = isHidden ? "text" : "password";
+      toggleBtn.textContent = isHidden ? "非表示" : "表示";
     });
 
-    // 🔁 フォーム送信処理
-    document.getElementById("registerForm").addEventListener("submit", async function(e) {
+    // 🔁 登録処理
+    document.getElementById("registerForm").addEventListener("submit", async (e) => {
       e.preventDefault();
-
       const email = document.getElementById("email").value.trim();
       const username = document.getElementById("username").value.trim();
       const password = document.getElementById("password").value;
@@ -176,62 +161,51 @@
         result.innerText = "⚠️ パスワードが一致しません。";
         return;
       }
-
       if (password.length < 6) {
         result.innerText = "⚠️ パスワードは6文字以上にしてください。";
         return;
       }
 
-      const registerRequest = {
+      result.innerText = "⏳ 登録中…";
+
+      PlayFabClientSDK.RegisterPlayFabUser({
         Email: email,
         Password: password,
         Username: username,
         RequireBothUsernameAndEmail: true
-      };
+      }, async function(success) {
+        console.log("✅ 登録成功:", success);
+        result.innerText = "✅ 登録完了！データ保存中…";
 
-      console.log("📩 PlayFab Register Request:", registerRequest);
-      result.innerText = "⏳ 登録中…（PlayFab通信テスト中）";
-
-      PlayFabClientSDK.RegisterPlayFabUser(registerRequest, async function(response, error) {
-        if (response && response.data) {
-          result.innerText = "✅ 登録完了！データ保存中…";
-
-        // ✅ PlayFabに「事前登録済み」情報を登録
-          PlayFabClientSDK.UpdateUserData({
+        // ✅ ユーザーデータ追加
+        PlayFabClientSDK.UpdateUserData({
           Data: {
-          pre_registered: "true",
-          register_date: new Date().toISOString()
+            pre_registered: "true",
+            register_date: new Date().toISOString()
           }
-      }, function() {
-        console.log("事前登録データ保存OK");
-      }, function(err) {
-        console.error("事前登録データ保存エラー:", err);
-      });
+        }, () => console.log("ユーザーデータ登録完了"), (err) => console.error("データ登録エラー:", err));
 
-          try {
-            await fetch("https://api.web3forms.com/submit", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                access_key: web3formsKey,
-                subject: "【GaiaProtocol運営】事前登録ありがとうございます！",
-                from_name: "GaiaProtocol",
-                to: email,
-                message: `こんにちは ${username} さん！\n\n『Gaia Protocol』に事前登録いただきありがとうございます！\n\n正式リリースを楽しみにお待ちください。\n\n- GaiaProtocol開発チーム`
-              })
-            });
-
-            result.innerText = "🎉 登録完了！確認メールを送信しました。";
-            document.getElementById("registerForm").reset();
-          } catch (err) {
-            result.innerText = "⚠️ 登録は成功しましたが、メール送信に失敗しました。";
-            console.error(err);
-          }
-
-        } else {
-          result.innerText = "⚠️ 登録失敗: " + (error?.errorMessage || "不明なエラー");
-          console.error(error);
+        // 📧 メール送信
+        try {
+          await fetch("https://api.web3forms.com/submit", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              access_key: web3formsKey,
+              subject: "【GaiaProtocol運営】事前登録ありがとうございます！",
+              from_name: "GaiaProtocol",
+              to: email,
+              message: `こんにちは ${username} さん！\n\n『Gaia Protocol』に事前登録いただきありがとうございます！\n\n正式リリースを楽しみにお待ちください。\n\n- GaiaProtocol開発チーム`
+            })
+          });
+          result.innerText = "🎉 登録完了！確認メールを送信しました。";
+          document.getElementById("registerForm").reset();
+        } catch (err) {
+          result.innerText = "⚠️ 登録成功（メール送信失敗）";
         }
+      }, function(error) {
+        console.error("❌ 登録失敗:", error);
+        result.innerText = "⚠️ 登録失敗: " + (error.errorMessage || "不明なエラー");
       });
     });
   </script>
