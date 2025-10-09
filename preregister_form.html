@@ -144,17 +144,20 @@
     const web3formsKey = "96cfe88e-9989-49d8-b3b7-3c4d88fb821c";
     PlayFab.settings.titleId = titleId;
 
-    // 👁 パスワード表示切り替え
-    document.getElementById("togglePassword").addEventListener("click", function() {
-      const pw = document.getElementById("password");
-      if (pw.type === "password") {
-        pw.type = "text";
-        this.textContent = "🙈";
-      } else {
-        pw.type = "password";
-        this.textContent = "👁";
-      }
-    });
+document.addEventListener("DOMContentLoaded", function() {
+  const toggleBtn = document.getElementById("togglePassword");
+  const pw = document.getElementById("password");
+
+  toggleBtn.addEventListener("click", function() {
+    if (pw.type === "password") {
+      pw.type = "text";
+      toggleBtn.textContent = "🙈";
+    } else {
+      pw.type = "password";
+      toggleBtn.textContent = "👁";
+    }
+  });
+});
 
     // 🔁 フォーム送信処理
     document.getElementById("registerForm").addEventListener("submit", async function(e) {
@@ -183,7 +186,8 @@
         RequireBothUsernameAndEmail: true
       };
 
-      result.innerText = "⏳ 登録中…";
+      console.log("📩 PlayFab Register Request:", registerRequest);
+      result.innerText = "⏳ 登録中…（PlayFab通信テスト中）";
 
       PlayFabClientSDK.RegisterPlayFabUser(registerRequest, async function(response, error) {
         if (response && response.data) {
