@@ -119,7 +119,7 @@
 
       <div class="password-box">
         <input type="password" id="password" placeholder="パスワード（6文字以上）" required>
-        //<button type="button" id="togglePassword">表示</button>
+        <button type="button" id="togglePassword">表示</button>
       </div>
 
       <input type="password" id="confirmPassword" placeholder="パスワード（確認用）" required><br>
@@ -140,13 +140,12 @@
     PlayFab.settings.titleId = titleId;
 
     // 👁 パスワード表示切り替え
-   // const pw = document.getElementById("password");
-    //const toggleBtn = document.getElementById("togglePassword");
-   // toggleBtn.addEventListener("click", () => {
-   //   const isHidden = pw.type === "password";
-   //   pw.type = isHidden ? "text" : "password";
-    //  toggleBtn.textContent = isHidden ? "非表示" : "表示";
-   // });
+    document.getElementById("togglePassword").addEventListener("click", () => {
+      const pw = document.getElementById("password");
+      pw.type = pw.type === "password" ? "text" : "password";
+      document.getElementById("togglePassword").textContent =
+        pw.type === "text" ? "非表示" : "表示";
+    });
 
     // 🔁 登録処理
     document.getElementById("registerForm").addEventListener("submit", async (e) => {
@@ -158,55 +157,82 @@
       const result = document.getElementById("result");
 
       if (password !== confirmPassword) {
-        result.innerText = "⚠️ パスワードが一致しません。";
+        result.innerText = "パスワードが一致しません。";
         return;
       }
       if (password.length < 6) {
-        result.innerText = "⚠️ パスワードは6文字以上にしてください。";
+        result.innerText = " パスワードは6文字以上にしてください。";
         return;
       }
 
       result.innerText = "⏳ 登録中…";
 
-      PlayFabClientSDK.RegisterPlayFabUser({
-        Email: email,
-        Password: password,
-        Username: username,
-        RequireBothUsernameAndEmail: true
-      }, async function(success) {
-        console.log("✅ 登録成功:", success);
-        result.innerText = "✅ 登録完了！データ保存中…";
+      PlayFabClientSDK.RegisterPlayFabUser(
+        {
+          Email: email,
+          Password: password,
+          Username: username,
+          RequireBothUsernameAndEmail: true
+        }, 
+        function(success) {
+          result.innerText = "✅ 登録成功！ログイン中...";
 
-        // ✅ ユーザーデータ追加
-        PlayFabClientSDK.UpdateUserData({
-          Data: {
-            pre_registered: "true",
-            register_date: new Date().toISOString()
-          }
-        }, () => console.log("ユーザーデータ登録完了"), (err) => console.error("データ登録エラー:", err));
+          // ② 登録完了後にログイン
+          PlayFabClientSDK.LoginWithEmailAddress(
+            {
+              Email: email,
+              Password: password,
+            },
+            function (loginResponse) {
+              result.innerText = "📦 データ保存中...";
 
-        // 📧 メール送信
-        try {
-          await fetch("https://api.web3forms.com/submit", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              access_key: web3formsKey,
-              subject: "【GaiaProtocol運営】事前登録ありがとうございます！",
-              from_name: "GaiaProtocol",
-              to: email,
-              message: `こんにちは ${username} さん！\n\n『Gaia Protocol』に事前登録いただきありがとうございます！\n\n正式リリースを楽しみにお待ちください。\n\n- GaiaProtocol開発チーム`
-            })
-          });
-          result.innerText = "🎉 登録完了！確認メールを送信しました。";
-          document.getElementById("registerForm").reset();
-        } catch (err) {
-          result.innerText = "⚠️ 登録成功（メール送信失敗）";
+              // ③ データ登録
+              PlayFabClientSDK.UpdateUserData(
+                {
+                  Data: {
+                    pre_registered: "true",
+                    register_date: new Date().toISOString(),
+                  },
+                },
+                async function () {
+                  result.innerText = "📧 メール送信中...";
+
+                  // ④ メール送信
+                  try {
+                    await fetch("https://api.web3forms.com/submit", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({
+                        access_key: web3formsKey,
+                        subject: "【GaiaProtocol運営】事前登録ありがとうございます！",
+                        from_name: "GaiaProtocol",
+                        to: email,
+                        message: `こんにちは ${username} さん！\n\n『Gaia Protocol』に事前登録いただきありがとうございます！\n\n正式リリースを楽しみにお待ちください。\n\n- GaiaProtocol開発チーム`,
+                      }),
+                    });
+                    result.innerText = "🎉 完了！メールを送信しました。";
+                    document.getElementById("registerForm").reset();
+                  } catch (err) {
+                    result.innerText = "⚠️ 登録成功しましたが、メール送信に失敗しました。";
+                  }
+                },
+                function (error) {
+                  console.error(error);
+                  result.innerText = "⚠️ データ保存に失敗しました。";
+                }
+              );
+            },
+            function (error) {
+              console.error(error);
+              result.innerText = "⚠️ ログインに失敗しました。";
+            }
+          );
+        },
+        function (error) {
+          console.error(error);
+          result.innerText = "⚠️ 登録に失敗しました: " + (error?.errorMessage || "不明なエラー");
         }
-      }, function(error) {
-        console.error("❌ 登録失敗:", error);
-        result.innerText = "⚠️ 登録失敗: " + (error.errorMessage || "不明なエラー");
-      });
+      );
     });
   </script>
 </body>
