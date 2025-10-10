@@ -149,18 +149,26 @@
       const web3formsKey = "96cfe88e-9989-49d8-b3b7-3c4d88fb821c";
       PlayFab.settings.titleId = titleId;
 
-      // 👁 パスワード表示切り替え
-      document.getElementById("togglePassword").addEventListener("click", () => {
+      window.onload = function() {
         const pw = document.getElementById("password");
-        pw.type = pw.type === "password" ? "text" : "password";
-        document.getElementById("togglePassword").textContent =
-          pw.type === "text" ? "非表示" : "表示";
-      });
+        const toggle = document.getElementById("togglePassword");
+        const result = document.getElementById("result");
+        const registerBtn = document.getElementById("registerButton");
 
-      // 🔁 登録処理
-      document
-        .getElementById("registerForm")
-        .addEventListener("click", async (e) => {
+        // 👁 パスワード表示切り替え
+        toggle.onclick = function() {
+          if (pw.type === "password") {
+            pw.type = "text";
+            toggle.textContent = "非表示";
+          } else {
+            pw.type = "password";
+            toggle.textContent = "表示";
+          }
+        };
+
+        // 🔘 登録ボタン動作テスト
+        registerBtn.onclick = function() {
+          result.innerText = "📡 ボタンが押されました！";
           const email = document.getElementById("email").value.trim();
           const username = document.getElementById("username").value.trim();
           const password = document.getElementById("password").value;
@@ -246,7 +254,7 @@
               result.innerText =
                 "⚠️ 登録に失敗しました: " +
                 (error?.errorMessage || "不明なエラー");
-            }
+            };
           );
         });
     </script>
