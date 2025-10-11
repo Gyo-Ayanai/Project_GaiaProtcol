@@ -212,9 +212,9 @@
                                         });
                                         
                                         result.innerText = "🎉 登録完了！トップページに戻ります...";
-                                         setTimeout(() => {
-                                             location.href = "index.html";
-                                         }, 2000); // 2秒後にリダイレクト
+                                        setTimeout(() => {
+                                            location.href = "index.html";
+                                        }, 2000); // 2秒後にリダイレクト
                                     }catch (err) {
                                         result.innerText = "⚠️ 登録成功しましたが、メール送信に失敗しました。";
                                         console.error(err);
