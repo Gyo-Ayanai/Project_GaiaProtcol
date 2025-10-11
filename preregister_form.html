@@ -1,258 +1,253 @@
 <!DOCTYPE html>
 <html lang="ja">
-    <script src="https://download.playfab.com/PlayFab.js"></script>
-    <script src="https://download.playfab.com/PlayFabClientApi.js"></script>
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>事前登録 - GaiaProtocol</title>
-    
+    <head>
+        <script src="https://download.playfab.com/PlayFab.js"></script>
+        <script src="https://download.playfab.com/PlayFabClientApi.js"></script>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>事前登録 - GaiaProtocol</title>
+        <style>
+            body {
+                font-family: "Segoe UI", sans-serif;
+                background: radial-gradient(circle at center, #0a0a1a, #000);
+                color: #fff;
+                text-align: center;
+                padding: 30px;
+            }
 
-    <style>
-        body {
-            font-family: "Segoe UI", sans-serif;
-            background: radial-gradient(circle at center, #0a0a1a, #000);
-            color: #fff;
-            text-align: center;
-            padding: 30px;
-        }
+            h1 {
+                margin-bottom: 10px;
+                color: #88f7ff;
+            }
 
-        h1 {
-            margin-bottom: 10px;
-            color: #88f7ff;
-        }
+            p {
+                color: #ccc;
+                margin-bottom: 20px;
+            }
 
-        p {
-            color: #ccc;
-            margin-bottom: 20px;
-        }
+            form {
+                background: rgba(255, 255, 255, 0.05);
+                padding: 25px;
+                border-radius: 10px;
+                display: inline-block;
+                text-align: left;
+                width: 300px;
+            }
 
-        form {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 25px;
-            border-radius: 10px;
-            display: inline-block;
-            text-align: left;
-            width: 300px;
-        }
-
-        input {
-            width: 100%;
-            padding: 10px;
-            margin-top: 10px;
-            border: none;
-            border-radius: 5px;
-            outline: none;
-            background: rgba(255, 255, 255, 0.1);
-            color: #fff;
-            font-size: 15px;
-        }
+            input {
+                width: 100%;
+                padding: 10px;
+                margin-top: 10px;
+                border: none;
+                border-radius: 5px;
+                outline: none;
+                background: rgba(255, 255, 255, 0.1);
+                color: #fff;
+                font-size: 15px;
+            }
 
             input::placeholder {
                 color: #aaa;
             }
 
-        button {
-            background: linear-gradient(90deg, #00c3ff, #0078ff);
-            color: white;
-            border: none;
-            border-radius: 5px;
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            margin-top: 15px;
-            width: 100%;
-        }
+            button {
+                background: linear-gradient(90deg, #00c3ff, #0078ff);
+                color: white;
+                border: none;
+                border-radius: 5px;
+                padding: 10px 20px;
+                font-size: 16px;
+                cursor: pointer;
+                margin-top: 15px;
+                width: 100%;
+            }
 
             button:hover {
                 background: linear-gradient(90deg, #00eaff, #0090ff);
             }
 
-        footer {
-            margin-top: 50px;
-            color: #555;
-        }
+            footer {
+                margin-top: 50px;
+                color: #555;
+            }
 
-        .password-box {
-            position: relative;
-        }
+            .password-box {
+                position: relative;
+            }
 
             .password-box input {
                 width: 100%;
                 padding-right: 50px;
             }
 
-        #togglePassword {
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            color: #aaa;
-            font-size: 14px;
-            cursor: pointer;
-        }
+            #togglePassword {
+                position: absolute;
+                right: 10px;
+                top: 50%;
+                transform: translateY(-50%);
+                background: none;
+                border: none;
+                color: #aaa;
+                font-size: 14px;
+                cursor: pointer;
+            }
 
             #togglePassword:hover {
                 color: #fff;
             }
 
-        @media screen and (max-width: 600px) {
-            form {
-                width: 85%;
+            @media screen and (max-width: 600px) {
+                form {
+                    width: 85%;
+                }
             }
-        }
-    </style>
-</head>
+        </style>
+    </head>
 
-<body>
-    <main>
-        <h1>アカウント事前登録</h1>
-        <p>メールアドレス、ユーザー名、パスワードを入力してください。</p>
+    <body>
+        <main>
+            <h1>アカウント事前登録</h1>
+            <p>メールアドレス、ユーザー名、パスワードを入力してください。</p>
 
-        <form id="registerForm">
-            <input type="email" id="email" placeholder="メールアドレス" required /><br />
-            <input type="text" id="username" placeholder="ユーザー名" required /><br />
+            <form id="registerForm">
+                <input type="email" id="email" placeholder="メールアドレス" required /><br />
+                <input type="text" id="username" placeholder="ユーザー名" required /><br />
 
-            <div class="password-box">
+                <div class="password-box">
+                    <input type="password"
+                        id="password"
+                        placeholder="パスワード（6文字以上）"
+                        required />
+                </div>
+
                 <input type="password"
-                       id="password"
-                       placeholder="パスワード（6文字以上）"
-                       required />
-            </div>
+                    id="confirmPassword"
+                    placeholder="パスワード（確認用）"
+                    required /><br />
 
-            <input type="password"
-                   id="confirmPassword"
-                   placeholder="パスワード（確認用）"
-                   required /><br />
+                <button type="submit" id="registerButton">登録する</button>
+            </form>
 
-            <button type="submit" id="registerButton">登録する</button>
-        </form>
+            <p id="result" style="margin-top: 30px; color: #f0a500"></p>
+        </main>
 
-        <p id="result" style="margin-top: 30px; color: #f0a500"></p>
-    </main>
+        <footer>
+            <p>© 2025 GaiaProtocol</p>
+        </footer>
 
-    <footer>
-        <p>© 2025 GaiaProtocol</p>
-    </footer>
+        <script>
+            const titleId = "1FEC7E";
+            const web3formsKey = "96cfe88e-9989-49d8-b3b7-3c4d88fb821c";
+            PlayFab.settings.titleId = titleId;
 
-    
+            window.onload = () => {
+                const pw = document.getElementById("password");
+                const toggle = document.getElementById("togglePassword");
+                const form = document.getElementById("registerForm");
+                const result = document.getElementById("result");
 
-    <script>
-        
-        const titleId = "1FEC7E";
-        const web3formsKey = "96cfe88e-9989-49d8-b3b7-3c4d88fb821c";
-        PlayFab.settings.titleId = titleId;
+                // 🔘 登録ボタン動作
+                form.addEventListener("submit", async (e) => {
+                    e.preventDefault(); // ← リロード防止！
 
-        window.onload = () => {
-            const pw = document.getElementById("password");
-            const toggle = document.getElementById("togglePassword");
-            const form = document.getElementById("registerForm");
-            const result = document.getElementById("result");
+                    const email = document.getElementById("email").value.trim();
+                    const username = document.getElementById("username").value.trim();
+                    const password = document.getElementById("password").value;
+                    const confirmPassword = document.getElementById("confirmPassword").value;
 
-            // 🔘 登録ボタン動作
-            form.addEventListener("submit", async (e) => {
-                e.preventDefault(); // ← リロード防止！
+                    if (password !== confirmPassword) {
+                        result.innerText = "⚠️ パスワードが一致しません。";
+                        return;
+                    }
+                    if (password.length < 6) {
+                        result.innerText = "⚠️ パスワードは6文字以上にしてください。";
+                        return;
+                    }
+                    // 🧊 入力欄ロック
+                    const inputs = form.querySelectorAll("input, button");
+                    inputs.forEach((el) => (el.disabled = true));
 
-                const email = document.getElementById("email").value.trim();
-                const username = document.getElementById("username").value.trim();
-                const password = document.getElementById("password").value;
-                const confirmPassword = document.getElementById("confirmPassword").value;
+                    result.innerText = "⏳ 登録中...";
 
-                if (password !== confirmPassword) {
-                    result.innerText = "⚠️ パスワードが一致しません。";
-                    return;
-                }
-                if (password.length < 6) {
-                    result.innerText = "⚠️ パスワードは6文字以上にしてください。";
-                    return;
-                }
-                // 🧊 入力欄ロック
-                const inputs = form.querySelectorAll("input, button");
-                inputs.forEach((el) => (el.disabled = true));
+                    try {
+                        // ① PlayFab登録
+                        PlayFabClientSDK.RegisterPlayFabUser(
+                            {
+                                TitleId: PlayFab.settings.titleId,
+                                Email: email,
+                                Password: password,
+                                Username: username,
+                                RequireBothUsernameAndEmail: true,
+                            },
+                            (success) => {
+                                result.innerText = "✅ 登録成功！ログイン中...";
 
-                result.innerText = "⏳ 登録中...";
+                                // 登録成功後に自動ログイン
+                                PlayFabClientSDK.LoginWithEmailAddress(
+                                    {
+                                        Email: email,
+                                        Password: password,
+                                    },
+                                    (loginSuccess) => {
+                                        result.innerText = "🔐 ログイン完了。データ保存中...";
 
-                try {
-                    // ① PlayFab登録
-                    PlayFabClientSDK.RegisterPlayFabUser(
-                        {
-                            TitleId: PlayFab.settings.titleId,
-                            Email: email,
-                            Password: password,
-                            Username: username,
-                            RequireBothUsernameAndEmail: true,
-                        },
-                        (success) => {
-                            result.innerText = "✅ 登録成功！ログイン中...";
-
-                            // 登録成功後に自動ログイン
-                            PlayFabClientSDK.LoginWithEmailAddress(
-                                {
-                                    Email: email,
-                                    Password: password,
-                                },
-                                (loginSuccess) => {
-                                    result.innerText = "🔐 ログイン完了。データ保存中...";
-
-                                    PlayFabClientSDK.UpdateUserData(
-                                        {
-                                            Data: {
-                                                pre_registered: "true",
-                                                register_date: new Date().toISOString(),
+                                        PlayFabClientSDK.UpdateUserData(
+                                            {
+                                                Data: {
+                                                    pre_registered: "true",
+                                                    register_date: new Date().toISOString(),
+                                                },
                                             },
-                                        },
-                                        async () => {
-                                            result.innerText = "📧 メール送信中...";
+                                            async () => {
+                                                result.innerText = "📧 メール送信中...";
 
-                                            // ③ Web3Formsでメール送信
-                                            try {
-                                                await fetch("https://api.web3forms.com/submit", {
-                                                    method: "POST",
-                                                    headers: { "Content-Type": "application/json" },
-                                                    body: JSON.stringify({
-                                                        access_key: web3formsKey,
-                                                        subject: "【GaiaProtocol運営】事前登録ありがとうございます！",
-                                                        from_name: "GaiaProtocol",
-                                                        to: email,
-                                                        message: `こんにちは ${username} さん！\n\n『Gaia Protocol』に事前登録いただきありがとうございます！\n\n正式リリースを楽しみにお待ちください。\n\n- GaiaProtocol開発チーム`,
-                                                    }),
-                                                });
-                                        
-                                                result.innerText = "🎉 登録完了！トップページに戻ります...";
-                                                setTimeout(() => {
-                                                    location.href = "index.html";
-                                                }, 2000); // 2秒後にリダイレクト
-                                            }catch (err) {
-                                                result.innerText = "⚠️ 登録成功しましたが、メール送信に失敗しました。";
-                                                console.error(err);
+                                                // ③ Web3Formsでメール送信
+                                                try {
+                                                    await fetch("https://api.web3forms.com/submit", {
+                                                        method: "POST",
+                                                        headers: { "Content-Type": "application/json" },
+                                                        body: JSON.stringify({
+                                                            access_key: web3formsKey,
+                                                            subject: "【GaiaProtocol運営】事前登録ありがとうございます！",
+                                                            from_name: "GaiaProtocol",
+                                                            to: email,
+                                                            message: `こんにちは ${username} さん！\n\n『Gaia Protocol』に事前登録いただきありがとうございます！\n\n正式リリースのお知らせは追ってご連絡いたします。\n\n今後ともよろしくお願いいたします。\n\nGaiaProtocol運営チーム`,
+                                                        }),
+                                                    });
+
+                                                    result.innerText = "🎉 登録完了！トップページに戻ります...";
+                                                    setTimeout(() => {
+                                                        location.href = "index.html";
+                                                    }, 2000); // 2秒後にリダイレクト
+                                                } catch (err) {
+                                                    result.innerText = "⚠️ 登録成功しましたが、メール送信に失敗しました。";
+                                                    console.error(err);
+                                                }
+                                            },
+                                            (error) => {
+                                                result.innerText = "⚠️ データ保存に失敗しました。";
+                                                console.error(error);
                                             }
-                                        },
-                                        (error) => {
-                                            result.innerText = "⚠️ データ保存に失敗しました。";
-                                            console.error(error);
-                                        } 
-                                    );
-                                },
-                                (loginError) => {
-                                    result.innerText = "⚠️ ログインに失敗しました。";
-                                    console.error(loginError);
-                                }
-                            );
-                        },
-                        (error) => {
-                            result.innerText =
-                                "⚠️ 登録に失敗しました: " + (error?.errorMessage || "不明なエラー");
-                            console.error(error);
-                        }
-                    );
-                } catch (err) {
-                    result.innerText = "⚠️ 通信エラーが発生しました。";
-                    console.error(err);
-                }
-            });
-        };
-    </script>
-</body>
+                                        );
+                                    },
+                                    (loginError) => {
+                                        result.innerText = "⚠️ ログインに失敗しました。";
+                                        console.error(loginError);
+                                    }
+                                );
+                            },
+                            (error) => {
+                                result.innerText =
+                                    "⚠️ 登録に失敗しました: " + (error?.errorMessage || "不明なエラー");
+                                console.error(error);
+                            }
+                        );
+                    } catch (err) {
+                        result.innerText = "⚠️ 通信エラーが発生しました。";
+                        console.error(err);
+                    }
+                });
+            };
+        </script>
+    </body>
 </html>
