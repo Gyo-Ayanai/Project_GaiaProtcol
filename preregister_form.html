@@ -168,6 +168,9 @@
                     result.innerText = "⚠️ パスワードは6文字以上にしてください。";
                     return;
                 }
+                // 🧊 入力欄ロック
+                const inputs = form.querySelectorAll("input, button");
+                inputs.forEach((el) => (el.disabled = true));
 
                 result.innerText = "⏳ 登録中...";
 
@@ -214,6 +217,12 @@
                                         result.innerText = "⚠️ 登録成功しましたが、メール送信に失敗しました。";
                                     }
                                 },
+                                 function () {
+                                     result.innerText = "🎉 登録完了！トップページに戻ります...";
+                                     setTimeout(() => {
+                                         location.href = "index.html";
+                                     }, 2000); // 2秒後にリダイレクト
+                                 },
                                 (error) => {
                                     result.innerText = "⚠️ データ保存に失敗しました。";
                                     console.error(error);
