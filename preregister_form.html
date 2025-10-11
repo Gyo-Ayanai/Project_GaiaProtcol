@@ -184,46 +184,60 @@
                             RequireBothUsernameAndEmail: true,
                         },
                         (success) => {
-                            result.innerText = "✅ 登録成功！データ保存中...";
+                            result.innerText = "✅ 登録成功！ログイン中...";
 
-                            // ② pre_registered フラグを保存
-                            PlayFabClientSDK.UpdateUserData(
+                            // 登録成功後に自動ログイン
+                            PlayFabClientSDK.LoginWithEmailAddress(
                                 {
-                                    Data: {
-                                        pre_registered: "true",
-                                        register_date: new Date().toISOString(),
-                                    },
+                                    Email: email,
+                                    Password: password,
                                 },
-                                async () => {
-                                    result.innerText = "📧 メール送信中...";
+                                (loginSuccess) => {
+                                    result.innerText = "🔐 ログイン完了。データ保存中...";
 
-                                    // ③ Web3Formsでメール送信
-                                    try {
-                                        await fetch("https://api.web3forms.com/submit", {
-                                            method: "POST",
-                                            headers: { "Content-Type": "application/json" },
-                                            body: JSON.stringify({
-                                                access_key: web3formsKey,
-                                                subject: "【GaiaProtocol運営】事前登録ありがとうございます！",
-                                                from_name: "GaiaProtocol",
-                                                to: email,
-                                                message: `こんにちは ${username} さん！\n\n『Gaia Protocol』に事前登録いただきありがとうございます！\n\n正式リリースを楽しみにお待ちください。\n\n- GaiaProtocol開発チーム`,
-                                            }),
-                                        });
+                                    PlayFabClientSDK.UpdateUserData(
+                                        {
+                                            Data: {
+                                                pre_registered: "true",
+                                                register_date: new Date().toISOString(),
+                                            },
+                                        },
+                                        async () => {
+                                            result.innerText = "📧 メール送信中...";
+
+                                            // ③ Web3Formsでメール送信
+                                            try {
+                                                await fetch("https://api.web3forms.com/submit", {
+                                                    method: "POST",
+                                                    headers: { "Content-Type": "application/json" },
+                                                    body: JSON.stringify({
+                                                        access_key: web3formsKey,
+                                                        subject: "【GaiaProtocol運営】事前登録ありがとうございます！",
+                                                        from_name: "GaiaProtocol",
+                                                        to: email,
+                                                        message: `こんにちは ${username} さん！\n\n『Gaia Protocol』に事前登録いただきありがとうございます！\n\n正式リリースを楽しみにお待ちください。\n\n- GaiaProtocol開発チーム`,
+                                                    }),
+                                                });
                                         
-                                        result.innerText = "🎉 登録完了！トップページに戻ります...";
-                                        setTimeout(() => {
-                                            location.href = "index.html";
-                                        }, 2000); // 2秒後にリダイレクト
-                                    }catch (err) {
-                                        result.innerText = "⚠️ 登録成功しましたが、メール送信に失敗しました。";
-                                        console.error(err);
-                                    }
+                                                result.innerText = "🎉 登録完了！トップページに戻ります...";
+                                                setTimeout(() => {
+                                                    location.href = "index.html";
+                                                }, 2000); // 2秒後にリダイレクト
+                                            }catch (err) {
+                                                result.innerText = "⚠️ 登録成功しましたが、メール送信に失敗しました。";
+                                                console.error(err);
+                                            }
+                                        },
+                                        (error) => {
+                                            result.innerText = "⚠️ データ保存に失敗しました。";
+                                            console.error(error);
+                                        } 
+                                    );
                                 },
-                                (error) => {
-                                    result.innerText = "⚠️ データ保存に失敗しました。";
-                                    console.error(error);
-                                } 
+                                (loginError) => {
+                                    result.innerText = "⚠️ ログインに失敗しました。";
+                                    console.error(loginError);
+                                }
                             );
                         },
                         (error) => {
