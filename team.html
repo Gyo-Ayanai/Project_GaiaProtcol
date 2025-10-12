@@ -58,29 +58,38 @@
     .member {
       display: flex;
       align-items: center;
-      background: #fff;
+      background: rgba(255, 255, 255, 0.05);
       border-radius: 12px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      margin-bottom: 20px;
       padding: 20px;
+      margin: 20px auto;
+      max-width: 600px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      gap: 20px; /* アイコンとテキストの間 */
     }
+
 
     .member img {
       width: 100px;
       height: 100px;
       border-radius: 50%;
       object-fit: cover;
+      flex-shrink: 0;
       margin-right: 20px;
-      border: 3px solid #ddd;
+      border: 2px solid rgba(255, 255, 255, 0.3);
     }
 
     .member h2 {
-      margin: 0 0 8px;
+      margin: 0;
+      font-size: 1.3rem;
+      color: #88f7ff;
     }
 
     .member p {
-      margin: 0;
+      margin: 5px 0 0;
+      color: #ccc;
+      text-align: left;
       line-height: 1.5;
+      word-break: break-word;
     }
 
     footer {
@@ -97,7 +106,8 @@
         text-align: center;
       }
       .member img {
-        margin: 0 0 15px 0;
+        width: 80px;
+        height: 80ps;
       }
     }
   </style>
