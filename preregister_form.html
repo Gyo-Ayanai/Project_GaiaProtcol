@@ -1,267 +1,285 @@
 <!DOCTYPE html>
 <html lang="ja">
-  <head>
-    <script src="https://download.playfab.com/PlayFab.js"></script>
-    <script src="https://download.playfab.com/PlayFabClientApi.js"></script>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>事前登録 - GaiaProtocol</title>
-    <style>
-      body {
-        font-family: "Segoe UI", sans-serif;
-        background: radial-gradient(circle at center, #0a0a1a, #000);
-        color: #fff;
-        text-align: center;
-        padding: 30px;
+<head>
+  <script src="https://download.playfab.com/PlayFab.js"></script>
+  <script src="https://download.playfab.com/PlayFabClientApi.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>事前登録 - GaiaProtocol</title>
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background: radial-gradient(circle at center, #0a0a1a, #000);
+      color: #fff;
+      text-align: center;
+      padding: 30px;
+    }
+
+    h1 {
+      margin-bottom: 10px;
+      color: #88f7ff;
+    }
+
+    p {
+      color: #ccc;
+      margin-bottom: 20px;
+    }
+
+    form {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 25px;
+      border-radius: 10px;
+      display: inline-block;
+      text-align: left;
+      width: 300px;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      border: none;
+      border-radius: 5px;
+      outline: none;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      font-size: 15px;
+    }
+
+    input::placeholder {
+      color: #aaa;
+    }
+
+    button {
+      background: linear-gradient(90deg, #00c3ff, #0078ff);
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 15px;
+      width: 100%;
+    }
+
+    button:hover {
+      background: linear-gradient(90deg, #00eaff, #0090ff);
+    }
+
+    footer {
+      margin-top: 50px;
+      color: #555;
+    }
+
+    .terms-wrap {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 15px;
+      border-radius: 10px;
+      width: 300px;
+      margin: 0 auto 20px;
+      text-align: left;
+    }
+
+    #termsBox {
+      height: 150px;
+      overflow-y: auto;
+      background: rgba(255, 255, 255, 0.07);
+      padding: 10px;
+      border-radius: 5px;
+      color: #ddd;
+      font-size: 13px;
+      white-space: pre-wrap;
+      -webkit-overflow-scrolling: touch; /* iPad対応 */
+    }
+
+    .terms-actions {
+      margin-top: 8px;
+      font-size: 12px;
+      color: #aaa;
+    }
+
+    .agree-line {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-top: 10px;
+    }
+
+    @media screen and (max-width: 600px) {
+      form, .terms-wrap {
+        width: 85%;
       }
+    }
+  </style>
+</head>
 
-      h1 {
-        margin-bottom: 10px;
-        color: #88f7ff;
-      }
+<body>
+  <main>
+    <h1>アカウント事前登録</h1>
+    <p>メールアドレス、ユーザー名、パスワードを入力してください。</p>
 
-      p {
-        color: #ccc;
-        margin-bottom: 20px;
-      }
+    <section class="terms-wrap" aria-labelledby="termsTitle">
+      <h2 id="termsTitle" style="margin:0 0 10px; color:#88f7ff; font-size:18px;">利用規約</h2>
+      <div id="termsBox" role="region" aria-label="利用規約本文をスクロールしてお読みください">
+        読み込み中...
+      </div>
+      <div class="terms-actions">
+        <small>
+          最後までスクロールすると同意チェックが有効になります。／
+          <a href="利用規約.txt" download>利用規約をダウンロード</a>
+        </small>
+      </div>
+      <label class="agree-line">
+        <input type="checkbox" id="agree" disabled />
+        <span>利用規約に同意します</span>
+      </label>
+    </section>
 
-      form {
-        background: rgba(255, 255, 255, 0.05);
-        padding: 25px;
-        border-radius: 10px;
-        display: inline-block;
-        text-align: left;
-        width: 300px;
-      }
+    <form id="registerForm">
+      <input type="email" id="email" placeholder="メールアドレス" required disabled /><br />
+      <input type="text" id="username" placeholder="ユーザー名" required disabled /><br />
+      <input type="password" id="password" placeholder="パスワード（6文字以上）" required disabled /><br />
+      <input type="password" id="confirmPassword" placeholder="パスワード（確認用）" required disabled /><br />
+      <button type="submit" id="registerButton" disabled>登録する</button>
+      <p id="formNote" style="color:#aaa; margin-top:10px; margin-bottom:0;">
+        利用規約を最後まで読むと入力できます
+      </p>
+    </form>
 
-      input {
-        width: 100%;
-        padding: 10px;
-        margin-top: 10px;
-        border: none;
-        border-radius: 5px;
-        outline: none;
-        background: rgba(255, 255, 255, 0.1);
-        color: #fff;
-        font-size: 15px;
-      }
+    <p id="result" style="margin-top: 30px; color: #f0a500"></p>
+  </main>
 
-      input::placeholder {
-        color: #aaa;
-      }
+  <footer>
+    <p>© 2025 GaiaProtocol</p>
+  </footer>
 
-      button {
-        background: linear-gradient(90deg, #00c3ff, #0078ff);
-        color: white;
-        border: none;
-        border-radius: 5px;
-        padding: 10px 20px;
-        font-size: 16px;
-        cursor: pointer;
-        margin-top: 15px;
-        width: 100%;
-      }
+  <script>
+    const titleId = "1FEC7E";
+    const web3formsKey = "96cfe88e-9989-49d8-b3b7-3c4d88fb821c";
+    PlayFab.settings.titleId = titleId;
 
-      button:hover {
-        background: linear-gradient(90deg, #00eaff, #0090ff);
-      }
+    window.onload = () => {
+      const form = document.getElementById("registerForm");
+      const result = document.getElementById("result");
+      const termsBox = document.getElementById("termsBox");
+      const agree = document.getElementById("agree");
 
-      footer {
-        margin-top: 50px;
-        color: #555;
-      }
-
-      @media screen and (max-width: 600px) {
-        form {
-          width: 85%;
-        }
-      }
-    </style>
-  </head>
-
-  <body>
-    <main>
-      <h1>アカウント事前登録</h1>
-      <p>メールアドレス、ユーザー名、パスワードを入力してください。</p>
-
-      <section class="terms-wrap" aria-labelledby="termsTitle">
-        <h2 id="termTitle" styale="margin:0 0 10px; color:#88f7ff; font-saze:18px;">利用規約</h2>
-        <div id="termsBox" role="region" aria-label="利用規約本文をスクロールしてお読みください">
-          読み込み中...
-        </div>
-        <div class="terms-actions">
-          <small>
-            最後までスクロールすると同意チェックが有効になります。／
-            <a harf="利用規約.txt" download>利用規約をダウンロード</a>
-          </small>
-        </div>
-        <label class="agree-line">
-          <input type="checkbox" id="agree" disabled/>
-          <span>利用規約に同意します</span>
-        </label>
-      </section>
-      
-      <form id="registerForm">
-        <input type="email" id="email" placeholder="メールアドレス" required disabled/><br />
-        <input type="text" id="username" placeholder="ユーザー名" required disabled/><br />
-        <input
-          type="password"
-          id="password"
-          placeholder="パスワード（6文字以上）"
-          required
-          disabled
-        /><br />
-        <input
-          type="password"
-          id="confirmPassword"
-          placeholder="パスワード（確認用）"
-          required
-          disabled
-        /><br />
-        <button type="submit" id="registerButton" disabled>登録する</button>
-        <p id="formNote" style="color:#aaa"; margin-top:10px; margin-bottom:0;">
-          規約の末尾まで同意すると入力できます
-        </p>
-      </form>
-
-      <p id="result" style="margin-top: 30px; color: #f0a500"></p>
-    </main>
-
-    <footer>
-      <p>© 2025 GaiaProtocol</p>
-    </footer>
-
-    <script>
-      const titleId = "1FEC7E";
-      const web3formsKey = "96cfe88e-9989-49d8-b3b7-3c4d88fb821c";
-      PlayFab.settings.titleId = titleId;
-
-      function enableInputs(enable){
-        document.getElementById("registerButton").disabled = !enable;
-      }
-      
-      window.onload = () => {
-        const form = document.getElementById("registerForm");
-        const result = document.getElementById("result");
-        const termsBox = document.getElementById("termsBox");
-        const agree = document.getElementById("agree");
-
-        fetch("利用規約.txt",{ cache:"no-store"})
-          .then((r) => {
-            if(!r.ok)throw new Error("Faild to load terms");
-            return r .text();
-          })
-          .then((text) => {
-            termsBox.textContent = text;
-          })
-          .catch((err) => {
-            console.error(err);
-            termsBox.textContent = "利用規約を読み込めませんでした。時間をおいて再度お試しください";
-          });
-
-        function checkScrolledToEnd(){
-          const epslion = 2;
-          const sxrolledToEnd =
-            termsBox.scrollTop + termsBox.clientHeight >=termsBox.scrollHeight - epsilon;
-          if (scrolledToEnd){
-            agree.disabled = false;
-          }
-        }
-        termsBox.addEventListener("scroll",checkScrolledToEnd);
-        setTimeout(checkScrolledToEnd,300);
-
-        agree.addEventListener("change",() => {
-          enableInputs(agree.checked);
+      // 利用規約読み込み
+      fetch("利用規約.txt", { cache: "no-store" })
+        .then((r) => {
+          if (!r.ok) throw new Error("Faild to load terms");
+          return r.text();
+        })
+        .then((text) => {
+          termsBox.textContent = text;
+        })
+        .catch((err) => {
+          console.error(err);
+          termsBox.textContent = "利用規約を読み込めませんでした。時間をおいて再度お試しください。";
         });
-        
-        form.addEventListener("submit", async (e) => {
-          e.preventDefault(); // リロード防止
 
-          const email = document.getElementById("email").value.trim();
-          const username = document.getElementById("username").value.trim();
-          const password = document.getElementById("password").value;
-          const confirmPassword = document.getElementById("confirmPassword").value;
+      // スクロール末尾で同意ボックス有効化
+      function checkScrolledToEnd() {
+        const epsilon = 2;
+        const scrolledToEnd =
+          termsBox.scrollTop + termsBox.clientHeight >= termsBox.scrollHeight - epsilon;
+        if (scrolledToEnd) {
+          agree.disabled = false;
+        }
+      }
 
-          if (!agree.checked){
-            result.innerText = "⚠️利用規約に同意してください。";
-            return;
-          }
-          if (password !== confirmPassword) {
-            result.innerText = "⚠️パスワードが一致しません。";
-            return;
-          }
-          if (password.length < 6) {
-            result.innerText = "⚠️ パスワードは6文字以上にしてください。";
-            return;
-          }
+      termsBox.addEventListener("scroll", checkScrolledToEnd);
+      setTimeout(checkScrolledToEnd, 500);
 
-          result.innerText = "⏳ 登録中...";
+      // チェックボックスでフォーム有効化
+      agree.addEventListener("change", () => {
+        const enable = agree.checked;
+        document.querySelectorAll("#registerForm input, #registerForm button")
+          .forEach((el) => (el.disabled = !enable));
+      });
 
-          try {
-            // ① PlayFab登録
-            PlayFabClientSDK.RegisterPlayFabUser(
-              {
-                TitleId: PlayFab.settings.titleId,
-                Email: email,
-                Password: password,
-                Username: username,
-                RequireBothUsernameAndEmail: true,
-              },
-              async (success) => {
-                result.innerText = "✅ 登録成功！データ保存中...";
+      // フォーム送信処理
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const email = document.getElementById("email").value.trim();
+        const username = document.getElementById("username").value.trim();
+        const password = document.getElementById("password").value;
+        const confirmPassword = document.getElementById("confirmPassword").value;
 
-                // ② ユーザーデータ保存
-                PlayFabClientSDK.UpdateUserData(
-                  {
-                    Data: {
-                      pre_registered: "true",
-                      register_date: new Date().toISOString(),
-                    },
+        if (!agree.checked) {
+          result.innerText = "⚠️ 利用規約に同意してください。";
+          return;
+        }
+        if (password !== confirmPassword) {
+          result.innerText = "⚠️ パスワードが一致しません。";
+          return;
+        }
+        if (password.length < 6) {
+          result.innerText = "⚠️ パスワードは6文字以上にしてください。";
+          return;
+        }
+
+        result.innerText = "⏳ 登録中...";
+
+        try {
+          PlayFabClientSDK.RegisterPlayFabUser(
+            {
+              TitleId: PlayFab.settings.titleId,
+              Email: email,
+              Password: password,
+              Username: username,
+              RequireBothUsernameAndEmail: true,
+            },
+            async (success) => {
+              result.innerText = "✅ 登録成功！データ保存中...";
+
+              PlayFabClientSDK.UpdateUserData(
+                {
+                  Data: {
+                    pre_registered: "true",
+                    register_date: new Date().toISOString(),
                   },
-                  async () => {
-                    result.innerText = "📧 メール送信中...";
+                },
+                async () => {
+                  result.innerText = "📧 メール送信中...";
+                  try {
+                    await fetch("https://api.web3forms.com/submit", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({
+                        access_key: web3formsKey,
+                        subject: "【GaiaProtocol運営】事前登録ありがとうございます！",
+                        from_name: "GaiaProtocol",
+                        to: email,
+                        message: `こんにちは ${username} さん！\n\n『Gaia Protocol』に事前登録いただきありがとうございます！\n\n正式リリースのお知らせを楽しみにお待ちください。\n\n- GaiaProtocol運営チーム`,
+                      }),
+                    });
 
-                    // ③ Web3Formsでメール送信
-                    try {
-                      await fetch("https://api.web3forms.com/submit", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                          access_key: web3formsKey,
-                          subject: "【GaiaProtocol運営】事前登録ありがとうございます！",
-                          from_name: "GaiaProtocol",
-                          to: email,
-                          message: `こんにちは ${username} さん！\n\n『Gaia Protocol』に事前登録いただきありがとうございます！\n\n正式リリースのお知らせを楽しみにお待ちください。\n\n- GaiaProtocol運営チーム`,
-                        }),
-                      });
-
-                      result.innerText = "🎉 登録完了！トップページに戻ります...";
-                      setTimeout(() => {
-                        location.href = "index.html";
-                      }, 2000);
-                    } catch (err) {
-                      result.innerText = "⚠️ 登録成功しましたが、メール送信に失敗しました。";
-                      console.error(err);
-                    }
-                  },
-                  (error) => {
-                    console.error(error);
-                    result.innerText = "⚠️ データ保存に失敗しました。";
+                    result.innerText = "🎉 登録完了！トップページに戻ります...";
+                    setTimeout(() => (location.href = "index.html"), 2000);
+                  } catch (err) {
+                    console.error(err);
+                    result.innerText = "⚠️ メール送信に失敗しました。";
                   }
-                );
-              },
-              (error) => {
-                console.error(error);
-                result.innerText =
-                  "⚠️ 登録に失敗しました: " + (error?.errorMessage || "不明なエラー");
-              }
-            );
-          } catch (err) {
-            console.error(err);
-            result.innerText = "⚠️ 通信エラーが発生しました。";
-          }
-        });
-      };
-    </script>
-  </body>
+                },
+                (error) => {
+                  console.error(error);
+                  result.innerText = "⚠️ データ保存に失敗しました。";
+                }
+              );
+            },
+            (error) => {
+              console.error(error);
+              result.innerText =
+                "⚠️ 登録に失敗しました: " + (error?.errorMessage || "不明なエラー");
+            }
+          );
+        } catch (err) {
+          console.error(err);
+          result.innerText = "⚠️ 通信エラーが発生しました。";
+        }
+      });
+    };
+  </script>
+</body>
 </html>
