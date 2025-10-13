@@ -84,6 +84,23 @@
       <h1>アカウント事前登録</h1>
       <p>メールアドレス、ユーザー名、パスワードを入力してください。</p>
 
+      <section class="terms-wrap" aria-labelledby="termsTitle">
+        <h2 id="termTitle" styale="margin:0 0 10px; color:#88f7ff; font-saze:18px;">利用規約</h2>
+        <div id="termsBox" role="region" aria-label="利用規約本文をスクロールしてお読みください">
+          読み込み中...
+        </div>
+        <div class="terms-actions">
+          <small>
+            最後までスクロールすると同意チェックが有効になります。／
+            <a harf="/利用規約.txt" download>利用規約をダウンロード</a>
+          </small>
+        </div>
+        <label class="agree-line">
+          <input type="checkbox" id="agree" disabled/>
+          <span>利用規約に同意します</span>
+        </label>
+      </section>
+      
       <form id="registerForm">
         <input type="email" id="email" placeholder="メールアドレス" required disabled/><br />
         <input type="text" id="username" placeholder="ユーザー名" required disabled/><br />
@@ -102,6 +119,9 @@
           disabled
         /><br />
         <button type="submit" id="registerButton" disabled>登録する</button>
+        <p id="formNote" style="color:#aaa"; margin-top:10px; margin-bottom:0;">
+          規約の末尾まで同意すると入力できます
+        </p>
       </form>
 
       <p id="result" style="margin-top: 30px; color: #f0a500"></p>
@@ -116,10 +136,44 @@
       const web3formsKey = "96cfe88e-9989-49d8-b3b7-3c4d88fb821c";
       PlayFab.settings.titleId = titleId;
 
+      function enableInputs(enable){
+        document.getElementById("registerButton").disabled = !enable;
+      }
+      
       window.onload = () => {
         const form = document.getElementById("registerForm");
         const result = document.getElementById("result");
+        const termsBox = document.getElementById("termsBox");
+        const agree = document.getElementById("agree");
 
+        fetch("/利用規約.txt",{ cache:"no-store"})
+          .then((r) => {
+            if(!r.ok)throw new Error("Faild to load terms");
+            return r .text();
+          })
+          .then((text) => {
+            termsBox.textContent = text;
+          })
+          .catch((err) => {
+            console.error(err);
+            termsBox.textContent = "利用規約を読み込めませんでした。時間をおいて再度お試しください";
+          });
+
+        function checkScrolledToEnd(){
+          const epslion = 2;
+          const sxrolledToEnd =
+            termsBox.scrollTop + termsBox.clientHeight >=termsBox.scrollHeight - epsilon;
+          if (scrolledToEnd){
+            agree.disabled = false;
+          }
+        }
+        termsBox.addEventListener("scroll",checkScrolledToEnd);
+        setTimeout(checkScrolledToEnd,300);
+
+        agree.addEventListener("change",() => {
+          enableInputs(agree.checked);
+        });
+        
         form.addEventListener("submit", async (e) => {
           e.preventDefault(); // リロード防止
 
@@ -128,8 +182,12 @@
           const password = document.getElementById("password").value;
           const confirmPassword = document.getElementById("confirmPassword").value;
 
+          if (!agree.checked){
+            result.innerText = "⚠️利用規約に同意してください。";
+            return;
+          }
           if (password !== confirmPassword) {
-            result.innerText = "⚠️ パスワードが一致しません。";
+            result.innerText = "⚠️パスワードが一致しません。";
             return;
           }
           if (password.length < 6) {
