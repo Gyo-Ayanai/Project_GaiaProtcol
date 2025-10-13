@@ -85,21 +85,23 @@
       <p>メールアドレス、ユーザー名、パスワードを入力してください。</p>
 
       <form id="registerForm">
-        <input type="email" id="email" placeholder="メールアドレス" required /><br />
-        <input type="text" id="username" placeholder="ユーザー名" required /><br />
+        <input type="email" id="email" placeholder="メールアドレス" required disabled/><br />
+        <input type="text" id="username" placeholder="ユーザー名" required disabled/><br />
         <input
           type="password"
           id="password"
           placeholder="パスワード（6文字以上）"
           required
+          disabled
         /><br />
         <input
           type="password"
           id="confirmPassword"
           placeholder="パスワード（確認用）"
           required
+          disabled
         /><br />
-        <button type="submit" id="registerButton">登録する</button>
+        <button type="submit" id="registerButton" disabled>登録する</button>
       </form>
 
       <p id="result" style="margin-top: 30px; color: #f0a500"></p>
