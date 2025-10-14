@@ -132,7 +132,7 @@
         <div id="privacyBox">読み込み中...</div>
         <div class="terms-actions">
           <small>最後までスクロールすると同意チェックが有効になります。／
-            <a href="プライバシーポリシー.txt" download>プライバシーポリシーをダウンロード</a>
+            <a href="policy.txt" download>プライバシーポリシーをダウンロード</a>
           </small>
         </div>
         <label><input type="checkbox" id="agreePrivacy" disabled />プライバシーポリシーに同意します</label>
@@ -180,7 +180,7 @@
             .catch(() => box.textContent = "読み込みに失敗しました。");
         }
         loadText("利用規約.txt", termsBox);
-        loadText("プライバシーポリシー.txt", privacyBox);
+        loadText("policy.txt", privacyBox);
         
 
       // 🔹 スクロール確認関数
