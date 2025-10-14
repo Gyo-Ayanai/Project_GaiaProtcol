@@ -172,14 +172,15 @@
         const inputs = document.querySelectorAll("#email, #username, #password, #confirmPassword");
 
       // 🔹 利用規約とプライバシーポリシーの読み込み
-        loadText("利用規約.txt", termsBox);
-        loadText("プライバシーポリシー.txt", privacyBox);
+        
         function loadText(url, box) {
           fetch(url, { cache: "no-store" })
             .then(r => r.ok ? r.text() : Promise.reject("読み込み失敗"))
             .then(text => box.textContent = text)
             .catch(() => box.textContent = "読み込みに失敗しました。");
         }
+        loadText("利用規約.txt", termsBox);
+        loadText("プライバシーポリシー.txt", privacyBox);
         
 
       // 🔹 スクロール確認関数
