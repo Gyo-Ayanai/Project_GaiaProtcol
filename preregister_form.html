@@ -173,14 +173,34 @@
 
       // 🔹 利用規約とプライバシーポリシーの読み込み
         
-        function loadText(url, box) {
-          fetch(url, { cache: "no-store" })
-            .then(r => r.ok ? r.text() : Promise.reject("読み込み失敗"))
-            .then(text => box.textContent = text)
-            .catch(() => box.textContent = "読み込みに失敗しました。");
-        }
-        loadText("terms.txt", termsBox);
-        loadText("policy.txt", privacyBox);
+        / 🔹 利用規約とプライバシーポリシーの読み込み
+        fetch("terms.txt",{ cache:"no-store"})
+          .then((r) => {
+            if(!r.ok)throw new Error("Faild to load terms");
+            return r .text();
+          })
+          .then((text) => {
+            termsBox.textContent = text;
+          })
+          .catch((err) => {
+            console.error(err);
+            termsBox.textContent = "利用規約を読み込めませんでした。時間をおいて再度お試しください";
+          });
+        
+        fetch("policy.txt",{ cache:"no-store"})
+          .then((r) => {
+            if(!r.ok)throw new Error("Faild to load terms");
+            return r .text();
+          })
+          .then((text) => {
+            privacyBox.textContent = text;
+          })
+          .catch((err) => {
+            console.error(err);
+            privacyBox.textContent = "利用規約を読み込めませんでした。時間をおいて再度お試しください";
+          });
+        
+
         
 
       // 🔹 スクロール確認関数
