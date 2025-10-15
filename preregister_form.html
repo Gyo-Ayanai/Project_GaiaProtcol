@@ -120,7 +120,7 @@
         <div id="termsBox">読み込み中...</div>
         <div class="terms-actions">
           <small>最後までスクロールすると同意チェックが有効になります。／
-            <a href="利用規約.txt" download>利用規約をダウンロード</a>
+            <a href="terms.txt" download>利用規約をダウンロード</a>
           </small>
         </div>
         <label><input type="checkbox" id="agreeTerms" disabled />利用規約に同意します</label>
@@ -179,7 +179,7 @@
             .then(text => box.textContent = text)
             .catch(() => box.textContent = "読み込みに失敗しました。");
         }
-        loadText("利用規約.txt", termsBox);
+        loadText("terms.txt", termsBox);
         loadText("policy.txt", privacyBox);
         
 
