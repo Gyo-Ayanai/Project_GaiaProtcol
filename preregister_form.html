@@ -4,8 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>事前登録 - GaiaProtocol</title>
+
     <script src="https://download.playfab.com/PlayFab.js"></script>
     <script src="https://download.playfab.com/PlayFabClientApi.js"></script>
+
     <style>
       body {
         font-family: "Segoe UI", sans-serif;
@@ -14,14 +16,17 @@
         text-align: center;
         padding: 30px;
       }
+
       h1 {
         margin-bottom: 10px;
         color: #88f7ff;
       }
+
       p {
         color: #ccc;
         margin-bottom: 20px;
       }
+
       form {
         background: rgba(255, 255, 255, 0.05);
         padding: 25px;
@@ -30,6 +35,7 @@
         text-align: left;
         width: 300px;
       }
+
       .terms-wrap {
         background: rgba(255, 255, 255, 0.08);
         padding: 15px;
@@ -39,7 +45,9 @@
         max-width: 400px;
         text-align: left;
       }
-      #termsBox, #privacyBox {
+
+      #termsBox,
+      #privacyBox {
         height: 150px;
         overflow-y: auto;
         background: rgba(255, 255, 255, 0.05);
@@ -48,14 +56,17 @@
         color: #ccc;
         font-size: 0.9rem;
       }
+
       .terms-actions {
         font-size: 0.8rem;
         margin-top: 5px;
         color: #aaa;
       }
+
       input[type="checkbox"] {
         margin-right: 5px;
       }
+
       input {
         width: 100%;
         padding: 10px;
@@ -67,9 +78,11 @@
         color: #fff;
         font-size: 15px;
       }
+
       input::placeholder {
         color: #aaa;
       }
+
       button {
         background: linear-gradient(90deg, #00c3ff, #0078ff);
         color: white;
@@ -81,13 +94,16 @@
         margin-top: 15px;
         width: 100%;
       }
+
       button:hover {
         background: linear-gradient(90deg, #00eaff, #0090ff);
       }
+
       footer {
         margin-top: 50px;
         color: #555;
       }
+
       @media screen and (max-width: 600px) {
         form {
           width: 85%;
@@ -106,11 +122,15 @@
         <h2>利用規約</h2>
         <div id="termsBox">読み込み中...</div>
         <div class="terms-actions">
-          <small>最後までスクロールすると同意チェックが有効になります。／
+          <small>
+            最後までスクロールすると同意チェックが有効になります。／
             <a href="terms.txt" download>利用規約をダウンロード</a>
           </small>
         </div>
-        <label><input type="checkbox" id="agreeTerms" disabled />利用規約に同意します</label>
+        <label>
+          <input type="checkbox" id="agreeTerms" disabled />
+          利用規約に同意します
+        </label>
       </section>
 
       <!-- プライバシーポリシー -->
@@ -118,11 +138,15 @@
         <h2>プライバシーポリシー</h2>
         <div id="privacyBox">読み込み中...</div>
         <div class="terms-actions">
-          <small>最後までスクロールすると同意チェックが有効になります。／
+          <small>
+            最後までスクロールすると同意チェックが有効になります。／
             <a href="policy.txt" download>プライバシーポリシーをダウンロード</a>
           </small>
         </div>
-        <label><input type="checkbox" id="agreePrivacy" disabled />プライバシーポリシーに同意します</label>
+        <label>
+          <input type="checkbox" id="agreePrivacy" disabled />
+          プライバシーポリシーに同意します
+        </label>
       </section>
 
       <!-- 登録フォーム -->
@@ -226,47 +250,62 @@
                 RequireBothUsernameAndEmail: true,
               },
               async (success) => {
-                result.innerText = "✅ 登録成功！データ保存中...";
+                result.innerText = "✅ 登録成功！ログイン中...";
 
-                PlayFabClientSDK.UpdateUserData(
+                // 🔹 登録後にログイン
+                PlayFabClientSDK.LoginWithEmailAddress(
                   {
-                    Data: {
-                      pre_registered: "true",
-                      register_date: new Date().toISOString(),
-                    },
+                    TitleId: PlayFab.settings.titleId,
+                    Email: email,
+                    Password: password,
                   },
-                  async () => {
-                    result.innerText = "📧 メール送信中...";
-                    try {
-                      await fetch("https://api.web3forms.com/submit", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                          access_key: web3formsKey,
-                          subject: "【GaiaProtocol運営】事前登録ありがとうございます！",
-                          from_name: "GaiaProtocol",
-                          to: email,
-                          message: `こんにちは ${username} さん！\n\n『Gaia Protocol』に事前登録いただきありがとうございます！\n\n正式リリースのお知らせを楽しみにお待ちください。\n\n- GaiaProtocol運営チーム`,
-                        }),
-                      });
+                  (loginSuccess) => {
+                    result.innerText = "✅ ログイン成功！データ保存中...";
 
-                      result.innerText = "🎉 登録完了！トップページに戻ります...";
-                      setTimeout(() => (location.href = "index.html"), 2000);
-                    } catch (err) {
-                      console.error(err);
-                      result.innerText = "⚠️ メール送信に失敗しました。";
-                    }
+                    PlayFabClientSDK.UpdateUserData(
+                      {
+                        Data: {
+                          pre_registered: "true",
+                          register_date: new Date().toISOString(),
+                        },
+                      },
+                      async () => {
+                        result.innerText = "📧 メール送信中...";
+                        try {
+                          await fetch("https://api.web3forms.com/submit", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                              access_key: web3formsKey,
+                              subject: "【GaiaProtocol運営】事前登録ありがとうございます！",
+                              from_name: "GaiaProtocol",
+                              to: email,
+                              message: `こんにちは ${username} さん！\n\n『Gaia Protocol』に事前登録いただきありがとうございます！\n\n正式リリースのお知らせを楽しみにお待ちください。\n\n- GaiaProtocol運営チーム`,
+                            }),
+                          });
+
+                          result.innerText = "🎉 登録完了！トップページに戻ります...";
+                          setTimeout(() => (location.href = "index.html"), 2000);
+                        } catch (err) {
+                          console.error(err);
+                          result.innerText = "⚠️ メール送信に失敗しました。";
+                        }
+                      },
+                      (error) => {
+                        console.error(error);
+                        result.innerText = "⚠️ データ保存に失敗しました。";
+                      }
+                    );
                   },
                   (error) => {
                     console.error(error);
-                    result.innerText = "⚠️ データ保存に失敗しました。";
+                    result.innerText = "⚠️ ログインに失敗しました。";
                   }
                 );
               },
               (error) => {
                 console.error(error);
-                result.innerText =
-                  "⚠️ 登録に失敗しました: " + (error?.errorMessage || "不明なエラー");
+                result.innerText = "⚠️ 登録に失敗しました: " + (error?.errorMessage || "不明なエラー");
               }
             );
           } catch (err) {
