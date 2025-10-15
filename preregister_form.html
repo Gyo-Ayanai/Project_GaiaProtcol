@@ -171,9 +171,8 @@
         const registerButton = document.getElementById("registerButton");
         const inputs = document.querySelectorAll("#email, #username, #password, #confirmPassword");
 
-      // 🔹 利用規約とプライバシーポリシーの読み込み
+      // 🔹 利用規約とプライバシーポリシーの
         
-        / 🔹 利用規約とプライバシーポリシーの読み込み
         fetch("terms.txt",{ cache:"no-store"})
           .then((r) => {
             if(!r.ok)throw new Error("Faild to load terms");
@@ -186,7 +185,6 @@
             console.error(err);
             termsBox.textContent = "利用規約を読み込めませんでした。時間をおいて再度お試しください";
           });
-        
         fetch("policy.txt",{ cache:"no-store"})
           .then((r) => {
             if(!r.ok)throw new Error("Faild to load terms");
