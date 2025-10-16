@@ -1,13 +1,29 @@
 <!DOCTYPE html>
 <html lang="ja">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>マイページ - GaiaProtocol</title>
-  <link rel="stylesheet" href="style.css">
-  <script src="https://download.playfab.com/PlayFab.js"></script>
-  <script src="https://download.playfab.com/PlayFabClientApi.js"></script>
-</head>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>マイページ - GaiaProtocol</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://download.playfab.com/PlayFab.js"></script>
+    <script src="https://download.playfab.com/PlayFabClientApi.js"></script>
+    <style>
+      body { font-family: "Segoe UI", sans-serif; background: radial-gradient(circle at center,#030787,#000); color:#fff; margin:0; padding:0; }
+      header, footer { background: rgba(10,10,30,0.8); padding:12px 20px; }
+      .container { max-width:1000px; margin:24px auto; padding:0 16px; }
+      .panel { background: rgba(255,255,255,0.03); padding:18px; border-radius:10px; }
+      .flex { display:flex; gap:16px; align-items:flex-start; flex-wrap:wrap; }
+      .profile-box { width:320px; padding:16px; border-radius:10px; background: rgba(0,0,0,0.35); text-align:center; }
+      .icon { width:120px; height:120px; border-radius:50%; object-fit:cover; border:2px solid rgba(255,255,255,0.08); display:block; margin:0 auto 12px; background:#111; }
+      label { display:block; margin:6px 0 4px; font-size:0.95rem; color:#d7e7ff; }
+      input[type=text], input[type=email], textarea { width:100%; padding:8px 10px; border-radius:6px; border: none; background: rgba(255,255,255,0.04); color: #fff; }
+      textarea { min-height:100px; resize:vertical; }
+      button { padding:10px 14px; background: linear-gradient(90deg,#4b5eff,#8f7bff); border:none; border-radius:8px; color:#fff; cursor:pointer; }
+      .small { font-size:0.9rem; color:#c9d9ff; }
+      .muted { color:#aab8ff; font-size:0.9rem; }
+      .error { color:#ffb3b3; }
+    </style>
+  </head>
 <body>
   <header>
     <nav>
@@ -20,15 +36,77 @@
       </ul>
     </nav>
   </header>
-  
-  <main>
-    <h1>ログイン</h1>
-  </main>
 
+  
+  <main class="container">
+    <h1 style="margin-top:18px;">マイページ</h1>
+
+    <div id="status" class="muted" style="margin-bottom:12px;">準備中</div>
+
+    <div class="panel">
+      <!-- ログインフォーム -->
+      <section id="loginPanel">
+        <h2>ログイン</h2>
+        <div style="max-width:420px;">
+          <label>メールアドレス</label>
+          <input id="loginEmail" type="email" placeholder="example@mail.com" />
+          <label>パスワード</label>
+          <input id="loginPassword" type="password" placeholder="パスワード" />
+          <div style="margin-top:12px;">
+            <button id="loginBtn">ログイン</button>
+            <button id="logoutBtn" style="display:none; margin-left:8px; background:#777;">ログアウト</button>
+          </div>
+          <p class="small" style="margin-top:8px;">まだアカウントがない？ → 事前登録ページへ</p>
+          <div id="loginError" class="error" style="margin-top:8px; display:none;"></div>
+        </div>
+      </section>
+
+      <!-- マイページ本体（ログイン後表示） -->
+      <section id="mypagePanel" style="display:none; margin-top:18px;">
+        <div class="flex">
+          <!-- プロフィール表示 -->
+          <div class="profile-box">
+            <img id="userIcon" class="icon" src="image/default_icon.png" alt="アイコン" />
+            <h3 id="displayNickname">—</h3>
+            <p id="displayProfile" class="muted">自己紹介がありません</p>
+            <div style="margin-top:8px;"><strong id="displayLevel">Lv. 1</strong></div>
+          </div>
+
+          <!-- プロフィール編集フォーム -->
+          <div style="flex:1; min-width:280px;">
+            <h3>プロフィール編集</h3>
+
+            <label>ニックネーム（日本語可）</label>
+            <input id="editNickname" type="text" placeholder="例：ぎょー" />
+
+            <label>自己紹介（日本語可）</label>
+            <textarea id="editProfile" placeholder="自己紹介を入力"></textarea>
+
+            <label>アイコン画像（外部URL）</label>
+            <input id="editIconUrl" type="text" placeholder="https://example.com/icon.png" />
+
+            <label>またはローカル画像をアップ（小さめにしてね）</label>
+            <input id="editIconFile" type="file" accept="image/*" />
+
+            <div style="margin-top:10px;">
+              <button id="saveProfileBtn">保存する</button>
+              <span class="small" style="margin-left:10px;">(画像は外部URL推奨／DataURLはサイズ制限あり)</span>
+            </div>
+
+            <div id="saveMsg" class="small" style="margin-top:8px; display:none;"></div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
 
   <footer>
     <p>© 2025 GaiaProtocol</p>
   </footer>
+
+
+
+
   
 </body>
 </html>
