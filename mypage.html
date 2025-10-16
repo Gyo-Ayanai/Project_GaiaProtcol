@@ -104,9 +104,235 @@
     <p>© 2025 GaiaProtocol</p>
   </footer>
 
+  <script>
+    // ===== 設定 =====
+    PlayFab.settings.titleId = "YOUR_PLAYFAB_TITLE_ID"; // ← 必ず変更
+    const SESSION_KEY = "PlayFabSessionTicket_v1";
+    const PLAYFAB_ID_KEY = "PlayFabId_v1";
 
+    // ===== ヘルパー: Base64 UTF-8 encode/decode（日本語対応） =====
+    function encodeUTF8Base64(str) {
+      return btoa(unescape(encodeURIComponent(str)));
+    }
+    function decodeUTF8Base64(b64) {
+      try { return decodeURIComponent(escape(atob(b64))); }
+      catch (e) { return ""; }
+    }
 
+    // ===== UI 要素 =====
+    const statusEl = document.getElementById("status");
+    const loginPanel = document.getElementById("loginPanel");
+    const mypagePanel = document.getElementById("mypagePanel");
+    const loginError = document.getElementById("loginError");
+    const loginBtn = document.getElementById("loginBtn");
+    const logoutBtn = document.getElementById("logoutBtn");
 
+    const loginEmail = document.getElementById("loginEmail");
+    const loginPassword = document.getElementById("loginPassword");
+
+    const userIcon = document.getElementById("userIcon");
+    const displayNickname = document.getElementById("displayNickname");
+    const displayProfile = document.getElementById("displayProfile");
+    const displayLevel = document.getElementById("displayLevel");
+
+    const editNickname = document.getElementById("editNickname");
+    const editProfile = document.getElementById("editProfile");
+    const editIconUrl = document.getElementById("editIconUrl");
+    const editIconFile = document.getElementById("editIconFile");
+    const saveProfileBtn = document.getElementById("saveProfileBtn");
+    const saveMsg = document.getElementById("saveMsg");
+
+    // ===== セッション保存/復元 =====
+    function saveSession(ticket, playfabId) {
+      localStorage.setItem(SESSION_KEY, ticket);
+      localStorage.setItem(PLAYFAB_ID_KEY, playfabId || "");
+      // SDK内部にセッションを設定（次回の呼び出しで自動使用）
+      PlayFab._internalSettings.sessionTicket = ticket;
+    }
+    function clearSession() {
+      localStorage.removeItem(SESSION_KEY);
+      localStorage.removeItem(PLAYFAB_ID_KEY);
+      PlayFab._internalSettings.sessionTicket = null;
+    }
+    function getSavedSession() {
+      return localStorage.getItem(SESSION_KEY);
+    }
+
+    // ===== 初期化：保存セッションがあれば自動ログイン状態にする =====
+    window.addEventListener("load", () => {
+      const ticket = getSavedSession();
+      if (ticket) {
+        statusEl.textContent = "自動ログインを試行しています...";
+        PlayFab._internalSettings.sessionTicket = ticket;
+        // 確認のため GetAccountInfo を呼んで当たり判定（軽い）
+        PlayFabClientSDK.GetAccountInfo({}, (res) => {
+          // 有効なセッション
+          statusEl.textContent = "ログイン済みです";
+          showMyPage();
+        }, (err) => {
+          console.warn("保存セッション無効:", err);
+          clearSession();
+          statusEl.textContent = "セッションが無効です。再ログインしてください。";
+        });
+      } else {
+        statusEl.textContent = "ログインしてください";
+        showLogin();
+      }
+    });
+
+    // ===== 表示切替 =====
+    function showLogin() {
+      loginPanel.style.display = "block";
+      mypagePanel.style.display = "none";
+      logoutBtn.style.display = "none";
+    }
+    function showMyPage() {
+      loginPanel.style.display = "none";
+      mypagePanel.style.display = "block";
+      logoutBtn.style.display = "inline-block";
+      loadProfile();
+    }
+
+    // ===== ログイン処理 =====
+    loginBtn.addEventListener("click", () => {
+      loginError.style.display = "none";
+      const email = loginEmail.value.trim();
+      const password = loginPassword.value;
+      if (!email || !password) {
+        loginError.textContent = "メールとパスワードを入力してください";
+        loginError.style.display = "block";
+        return;
+      }
+      statusEl.textContent = "ログイン中...";
+      PlayFabClientSDK.LoginWithEmailAddress({
+        TitleId: PlayFab.settings.titleId,
+        Email: email,
+        Password: password
+      }, (res) => {
+        console.log("Login success:", res);
+        const ticket = res.data?.SessionTicket;
+        const pfid = res.data?.PlayFabId || "";
+        if (ticket) saveSession(ticket, pfid);
+        statusEl.textContent = "ログインしました";
+        showMyPage();
+      }, (err) => {
+        console.error("Login error:", err);
+        loginError.textContent = err?.errorMessage || "ログインに失敗しました";
+        loginError.style.display = "block";
+        statusEl.textContent = "ログイン失敗";
+      });
+    });
+
+    // ログアウト
+    logoutBtn.addEventListener("click", () => {
+      clearSession();
+      loginEmail.value = "";
+      loginPassword.value = "";
+      statusEl.textContent = "ログアウトしました";
+      showLogin();
+    });
+
+    // ===== プロフィール読み込み =====
+    function loadProfile() {
+      statusEl.textContent = "プロフィール読み込み中...";
+      PlayFabClientSDK.GetUserData({}, (res) => {
+        const data = (res.data && res.data.Data) || {};
+        const nickB64 = data.nickname?.Value;
+        const profB64 = data.profile?.Value;
+        const level = data.level?.Value || "1";
+        const icon = data.icon_url?.Value || data.user_icon?.Value || "image/default_icon.png";
+
+        const nick = nickB64 ? decodeUTF8Base64(nickB64) : "（未設定）";
+        const prof = profB64 ? decodeUTF8Base64(profB64) : "自己紹介がありません";
+
+        displayNickname.textContent = nick;
+        displayProfile.textContent = prof;
+        displayLevel.textContent = "Lv. " + level;
+        userIcon.src = icon;
+
+        // 編集フォームに反映
+        editNickname.value = nick === "（未設定）" ? "" : nick;
+        editProfile.value = prof === "自己紹介がありません" ? "" : prof;
+        editIconUrl.value = (icon && icon !== "image/default_icon.png") ? icon : "";
+
+        statusEl.textContent = "プロフィール表示中";
+      }, (err) => {
+        console.error("GetUserData error:", err);
+        statusEl.textContent = "プロフィールの読み込みに失敗しました";
+      });
+    }
+
+    // ===== 画像ファイルをDataURLに変換（小さい画像向け） =====
+    function fileToDataUrl(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    // ===== プロフィール保存 =====
+    saveProfileBtn.addEventListener("click", async () => {
+      saveMsg.style.display = "none";
+      const nick = editNickname.value.trim();
+      const prof = editProfile.value.trim();
+      const url = editIconUrl.value.trim();
+      const file = editIconFile.files[0];
+
+      if (!nick) {
+        saveMsg.textContent = "ニックネームは必須です";
+        saveMsg.style.display = "block";
+        return;
+      }
+
+      // エンコードしてPlayFabに入れる（日本語OK）
+      const dataToSave = {
+        nickname: encodeUTF8Base64(nick),
+        profile: encodeUTF8Base64(prof || "")
+      };
+
+      // アイコン：優先順は (1) URL入力 (2) ファイルをDataURLに変換
+      if (url) {
+        dataToSave.icon_url = url;
+      } else if (file) {
+        // 小さな画像ならDataURLを保存できる（注意：容量上限がある）
+        try {
+          const dataUrl = await fileToDataUrl(file);
+          // 容量チェック（約8KBを推奨上限） — DataURLは長くなりがち
+          if (dataUrl.length > 9000) {
+            saveMsg.textContent = "画像が大きすぎます。外部アップロードしてURLを入力してください。";
+            saveMsg.style.display = "block";
+            return;
+          }
+          dataToSave.user_icon = dataUrl;
+        } catch (e) {
+          console.error(e);
+          saveMsg.textContent = "画像の読み込みに失敗しました";
+          saveMsg.style.display = "block";
+          return;
+        }
+      }
+
+      statusEl.textContent = "プロフィール保存中...";
+      saveMsg.textContent = "保存中...";
+      saveMsg.style.display = "block";
+
+      PlayFabClientSDK.UpdateUserData({ Data: dataToSave }, (res) => {
+        console.log("UpdateUserData success:", res);
+        saveMsg.textContent = "保存しました！";
+        statusEl.textContent = "プロフィールを保存しました";
+        // 保存後、再読み込みして表示を更新
+        setTimeout(loadProfile, 700);
+      }, (err) => {
+        console.error("UpdateUserData error:", err);
+        saveMsg.textContent = "保存に失敗しました: " + (err?.errorMessage || JSON.stringify(err));
+      });
+    });
+
+    // ===== 補足：プロフィール読み込みの初回呼び出しは showMyPage() で行う =====
+
+  </script>
   
 </body>
 </html>
