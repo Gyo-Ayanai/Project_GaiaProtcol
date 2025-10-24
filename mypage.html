@@ -225,7 +225,28 @@
     function getSavedSession() {
       return localStorage.getItem(SESSION_KEY);
     }
-
+    
+    // ===== 初期化：保存セッションがあれば自動ログイン状態にする =====
+    window.addEventListener("load", () => {
+      const ticket = getSavedSession();
+      if (ticket) {
+        statusEl.textContent = "自動ログインを試行しています...";
+        PlayFab._internalSettings.sessionTicket = ticket;
+        // 確認のため GetAccountInfo を呼んで当たり判定（軽い）
+        PlayFabClientSDK.GetAccountInfo({}, (res) => {
+          // 有効なセッション
+          statusEl.textContent = "ログイン済みです";
+          showMyPage();
+        }, (err) => {
+          console.warn("保存セッション無効:", err);
+          clearSession();
+          statusEl.textContent = "セッションが無効です。再ログインしてください。";
+        });
+      } else {
+        statusEl.textContent = "ログインしてください";
+        showLogin();
+      }
+    });
 
 
     // ===== 表示切替 =====
