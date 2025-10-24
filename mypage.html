@@ -260,79 +260,126 @@
         console.error("GetUserData error:", err);
         statusEl.textContent = "プロフィールの読み込みに失敗しました";
       });
-    }
+      // ===== 画像を10MB以下に圧縮 =====
+      async function compressImage(file, maxMB = 10) {
+        const img = await createImageBitmap(file);
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+        canvas.width = img.width;
+        canvas.height = img.height;
+        ctx.drawImage(img, 0, 0);
 
-    // ===== 画像ファイルをDataURLに変換（小さい画像向け） =====
-    function fileToDataUrl(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      });
-    }
+        let quality = 0.95;
+        let blob;
+        do {
+          blob = await new Promise(r => canvas.toBlob(r, "image/jpeg", quality));
+          quality -= 0.05;
+        } while (blob.size > maxMB * 1024 * 1024 && quality > 0.1);
 
-    // ===== プロフィール保存 =====
-    saveProfileBtn.addEventListener("click", async () => {
-      saveMsg.style.display = "none";
-      const nick = editNickname.value.trim();
-      const prof = editProfile.value.trim();
-      const url = editIconUrl.value.trim();
-      const file = editIconFile.files[0];
-
-      if (!nick) {
-        saveMsg.textContent = "ニックネームは必須です";
-        saveMsg.style.display = "block";
-        return;
+        return blob;
       }
 
-      // エンコードしてPlayFabに入れる（日本語OK）
-      const dataToSave = {
-        nickname: encodeUTF8Base64(nick),
-        profile: encodeUTF8Base64(prof || "")
-      };
+      // ===== PlayFab File Upload APIを使ってアップロード =====
+      async function uploadFileToPlayFab(file) {
+        return new Promise(async (resolve, reject) => {
+          try {
+            // ① 圧縮
+            const compressed = await compressImage(file, 10);
+            console.log("圧縮後サイズ:", (compressed.size / 1024 / 1024).toFixed(2), "MB");
 
-      // アイコン：優先順は (1) URL入力 (2) ファイルをDataURLに変換
-      if (url) {
-        dataToSave.icon_url = url;
-      } else if (file) {
-        // 小さな画像ならDataURLを保存できる（注意：容量上限がある）
-        try {
-          const dataUrl = await fileToDataUrl(file);
-          // 容量チェック（約8KBを推奨上限） — DataURLは長くなりがち
-          if (dataUrl.length > 9000) {
-            saveMsg.textContent = "画像が大きすぎます。外部アップロードしてURLを入力してください。";
-            saveMsg.style.display = "block";
-            return;
+            // ② InitiateFileUploads 呼び出し
+            PlayFabClientSDK.InitiateFileUploads({
+              FileNames: ["user_icon.jpg"]
+            }, async (initRes, initErr) => {
+              if (initErr || !initRes?.data?.UploadDetails?.length) {
+                console.error("InitiateFileUploads error:", initErr);
+                reject("アップロードURLの取得に失敗しました。");
+                return;
+              }
+
+              const uploadUrl = initRes.data.UploadDetails[0].UploadUrl;
+              const fileName = initRes.data.UploadDetails[0].FileName;
+
+              // ③ 実際にファイルをPUTでアップロード
+              await fetch(uploadUrl, {
+                method: "PUT",
+                body: compressed,
+                headers: { "Content-Type": "image/jpeg" }
+              });
+
+              // ④ FinalizeFileUploads 呼び出し
+              PlayFabClientSDK.FinalizeFileUploads({ 
+                FileNames: [fileName]
+              }, (finRes, finErr) => {
+                if (finErr) {
+                  console.error("FinalizeFileUploads error:", finErr);
+                  reject("ファイルの確定に失敗しました。");
+                  return;
+                }
+
+                const url = finRes.data.Metadata?.[fileName]?.DownloadUrl;
+                resolve(url || "");
+              });
+            });
+          } catch (e) {
+            console.error(e);
+            reject("画像アップロード中にエラーが発生しました。");
           }
-          dataToSave.user_icon = dataUrl;
-        } catch (e) {
-          console.error(e);
-          saveMsg.textContent = "画像の読み込みに失敗しました";
+        });
+      }
+
+      // ===== プロフィール保存 =====
+      saveProfileBtn.addEventListener("click", async () => {
+        saveMsg.style.display = "none";
+        const nick = editNickname.value.trim();
+        const prof = editProfile.value.trim();
+        const url = editIconUrl.value.trim();
+        const file = editIconFile.files[0];
+
+        if (!nick) {
+          saveMsg.textContent = "ニックネームは必須です";
           saveMsg.style.display = "block";
           return;
-        }
-      }
+        }  
 
-      statusEl.textContent = "プロフィール保存中...";
-      saveMsg.textContent = "保存中...";
-      saveMsg.style.display = "block";
+        const dataToSave = {
+          nickname: encodeUTF8Base64(nick),
+          profile: encodeUTF8Base64(prof || "")
+        };
 
-      PlayFabClientSDK.UpdateUserData({ Data: dataToSave }, (res) => {
-        console.log("UpdateUserData success:", res);
-        saveMsg.textContent = "保存しました！";
-        statusEl.textContent = "プロフィールを保存しました";
-        // 保存後、再読み込みして表示を更新
-        setTimeout(loadProfile, 700);
-      }, (err) => {
-        console.error("UpdateUserData error:", err);
-        saveMsg.textContent = "保存に失敗しました: " + (err?.errorMessage || JSON.stringify(err));
+        statusEl.textContent = "プロフィール保存中...";
+        saveMsg.textContent = "保存中...";
+        saveMsg.style.display = "block";
+
+        try {
+          let finalIconUrl = url;
+
+          // ファイルがある場合はPlayFabにアップロード
+          if (file && !url) {
+            saveMsg.textContent = "画像アップロード中...";
+            finalIconUrl = await uploadFileToPlayFab(file);
+            console.log("アップロード完了URL:", finalIconUrl);
+          }
+
+          if (finalIconUrl) {
+            dataToSave.icon_url = finalIconUrl;
+          }
+
+          // ⑤ プロフィール保存
+          PlayFabClientSDK.UpdateUserData({ Data: dataToSave }, (res) => {
+            console.log("UpdateUserData success:", res);
+            saveMsg.textContent = "保存しました！";
+            statusEl.textContent = "プロフィールを保存しました";
+            setTimeout(loadProfile, 700);
+          }, (err) => {
+            console.error("UpdateUserData error:", err);
+            saveMsg.textContent = "保存に失敗しました: " + (err?.errorMessage || JSON.stringify(err));
+          });
+        } catch (e) {
+          console.error(e);
+          saveMsg.textContent = "画像アップロードに失敗しました: " + e;
+        }  
       });
-    });
-
-    // ===== 補足：プロフィール読み込みの初回呼び出しは showMyPage() で行う =====
-
-  </script>
-  
+    </script>
 </body>
 </html>
