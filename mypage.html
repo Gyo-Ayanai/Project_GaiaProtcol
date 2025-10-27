@@ -264,57 +264,57 @@
     }
 
     // ===== プロフィール保存 =====
-      saveProfileBtn.addEventListener("click", async () => {
-        saveMsg.style.display = "none";
-        const nick = editNickname.value.trim();
-        const prof = editProfile.value.trim();
-        const url = editIconUrl.value.trim();
-        const file = editIconFile.files[0];
+    saveProfileBtn.addEventListener("click", async () => {
+      saveMsg.style.display = "none";
+      const nick = editNickname.value.trim();
+      const prof = editProfile.value.trim();
+      const url = editIconUrl.value.trim();
+      const file = editIconFile.files[0];
 
-        if (!nick) {
-          saveMsg.textContent = "ニックネームは必須です";
-          saveMsg.style.display = "block";
-          return;
-        }  
-
-        const dataToSave = {
-          nickname: encodeUTF8Base64(nick),
-          profile: encodeUTF8Base64(prof || "")
-        };
-
-        statusEl.textContent = "プロフィール保存中...";
-        saveMsg.textContent = "保存中...";
+      if (!nick) {
+        saveMsg.textContent = "ニックネームは必須です";
         saveMsg.style.display = "block";
+        return;
+      }  
 
-        try {
-          let finalIconUrl = url;
+      const dataToSave = {
+        nickname: encodeUTF8Base64(nick),
+        profile: encodeUTF8Base64(prof || "")
+      };
+
+      statusEl.textContent = "プロフィール保存中...";
+      saveMsg.textContent = "保存中...";
+      saveMsg.style.display = "block";
+
+      try {
+        let finalIconUrl = url;
 
           // ファイルがある場合はPlayFabにアップロード
-          if (file && !url) {
-            saveMsg.textContent = "画像アップロード中...";
-            finalIconUrl = await uploadFileToPlayFab(file);
-            console.log("アップロード完了URL:", finalIconUrl);
-          }
+        if (file && !url) {
+          saveMsg.textContent = "画像アップロード中...";
+          finalIconUrl = await uploadFileToPlayFab(file);
+          console.log("アップロード完了URL:", finalIconUrl);
+        }
 
-          if (finalIconUrl) {
-            dataToSave.icon_url = finalIconUrl;
-          }
+        if (finalIconUrl) {
+          dataToSave.icon_url = finalIconUrl;
+        }
 
           // ⑤ プロフィール保存
-          PlayFabClientSDK.UpdateUserData({ Data: dataToSave }, (res) => {
-            console.log("UpdateUserData success:", res);
-            saveMsg.textContent = "保存しました！";
-            statusEl.textContent = "プロフィールを保存しました";
-            setTimeout(loadProfile, 700);
-          }, (err) => {
-            console.error("UpdateUserData error:", err);
-            saveMsg.textContent = "保存に失敗しました: " + (err?.errorMessage || JSON.stringify(err));
-          });
-        } catch (e) {
-          console.error(e);
-          saveMsg.textContent = "画像アップロードに失敗しました: " + e;
-        }  
-      });
+        PlayFabClientSDK.UpdateUserData({ Data: dataToSave }, (res) => {
+          console.log("UpdateUserData success:", res);
+          saveMsg.textContent = "保存しました！";
+          statusEl.textContent = "プロフィールを保存しました";
+          setTimeout(loadProfile, 700);
+        }, (err) => {
+          console.error("UpdateUserData error:", err);
+          saveMsg.textContent = "保存に失敗しました: " + (err?.errorMessage || JSON.stringify(err));
+        });
+      } catch (e) {
+        console.error(e);
+        saveMsg.textContent = "画像アップロードに失敗しました: " + e;
+      }  
+    });
 
     // ===== ログイン処理 =====
     loginBtn.addEventListener("click", () => {
