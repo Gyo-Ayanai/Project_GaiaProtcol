@@ -77,7 +77,7 @@
             <h3>プロフィール編集</h3>
 
             <label>ニックネーム（日本語可）</label>
-            <input id="editNickname" type="text" placeholder="例：ぎょー" />
+            <input id="editNickname" type="text" placeholder="ニックネーム" />
 
             <label>自己紹介（日本語可）</label>
             <textarea id="editProfile" placeholder="自己紹介を入力"></textarea>
@@ -364,7 +364,7 @@
         showLogin();
         return;
       }
-      PlayFabClientSDK.GetUserData({}, (res) => {
+      PlayFabClientSDK.GetUserData({ PlayFabId: playfabId }, (res) => {
         const data = (res.data && res.data.Data) || {};
         const nickB64 = data.nickname?.Value;
         const profB64 = data.profile?.Value;
