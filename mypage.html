@@ -382,7 +382,7 @@
         // 編集フォームに反映
         editNickname.value = nick === "（未設定）" ? "" : nick;
         editProfile.value = prof === "自己紹介がありません" ? "" : prof;
-        editIconUrl.value = (icon && icon !== "image/default_icon.png") ? icon : "";
+        editIconUrl.value = (icon && icon !== "image/icon/default_icon.png") ? icon : "";
 
         statusEl.textContent = "プロフィール表示中";
       }, (err) => {
