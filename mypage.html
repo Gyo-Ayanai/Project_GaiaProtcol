@@ -110,16 +110,6 @@
     const SESSION_KEY = "PlayFabSessionTicket_v1";
     const PLAYFAB_ID_KEY = "PlayFabId_v1";
 
-    // ===== ヘルパー: Base64 UTF-8 encode/decode（日本語対応） =====
-    function encodeUTF8Base64(str) {
-      return btoa(unescape(encodeURIComponent(str)));
-    }
-    function decodeUTF8Base64(b64) {
-      try { return decodeURIComponent(escape(atob(b64))); }
-      catch (e) { return ""; }
-    }
-
-
     // ===== UI 要素 =====
     const statusEl = document.getElementById("status");
     const loginPanel = document.getElementById("loginPanel");
@@ -211,7 +201,15 @@
       });
     }
 
-    
+    // Base64 エンコード
+    function encodeUTF8Base64(str) {
+      return btoa(unescape(encodeURIComponent(str)));
+    }
+
+    // Base64 デコード
+    function decodeUTF8Base64(str) {
+      return decodeURIComponent(escape(atob(str)));
+    }
 
     // ===== セッション保存/復元 =====
     function saveSession(ticket, playfabId) {
