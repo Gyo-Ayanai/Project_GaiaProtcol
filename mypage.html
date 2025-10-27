@@ -234,7 +234,7 @@
       const ticket = getSavedSession();
       if (ticket) {
         statusEl.textContent = "自動ログインを試行しています...";
-        PlayFab.internalSettings.sessionTicket = ticket;  //here
+        PlayFab._internalSettings.sessionTicket = ticket;  //here
         // 確認のため GetAccountInfo を呼んで当たり判定（軽い）
         PlayFabClientSDK.GetAccountInfo({}, (res) => {
           // 有効なセッション
