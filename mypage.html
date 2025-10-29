@@ -96,7 +96,7 @@
             <textarea id="editProfile" placeholder="自己紹介を入力"></textarea>
 
             <label>アイコン画像を選択</label>
-            <input id="editIconFile" type="file" accept="image/*" />
+            <input id="editIconFile" type="file" accept="image/icon/default_icon.png" />
 
             <div style="margin-top:10px;">
               <button id="saveProfileBtn">保存する</button>
@@ -197,9 +197,9 @@
         userIcon.src = icon;
 
         // 編集フォームに反映
-        editNickname.value = nick === "（未設定）" ? "" : nick;
-        editProfile.value = prof === "自己紹介がありません" ? "" : prof;
-        editIconUrl.value = (icon && icon !== "image/icon/default_icon.png") ? icon : "";
+        if (editNickname) editNickname.value = nick === "（未設定）" ? "" : nick;
+        if (editProfile) editProfile.value = prof === "自己紹介がありません" ? "" : prof;
+        if (editIconUrl) editIconUrl.value = (icon && icon !== "image/icon/default_icon.png") ? icon : "";
 
         statusEl.textContent = "プロフィール表示中";
       }, (err) => {
