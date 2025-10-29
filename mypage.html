@@ -54,7 +54,6 @@
           <input id="loginPassword" type="password" placeholder="パスワード" />
           <div style="margin-top:12px;">
             <button id="loginBtn">ログイン</button>
-            <button id="logoutBtn" style="display:none; margin-left:8px; background:#777;">ログアウト</button>
           </div>
           <p class="small" style="margin-top:8px;">まだアカウントがない？ → 事前登録ページへ</p>
           <div id="loginError" class="error" style="margin-top:8px; display:none;"></div>
@@ -74,6 +73,7 @@
 
           <div>
             <button id="changeprofile">変更する</button>
+            <button id="logoutBtn" margin-left:8px; background:#777;">ログアウト</button>
           </div>
           
           
@@ -81,7 +81,7 @@
       </section>
       
       <!-- マイページ編集（ログイン後表示） -->
-      <section id="editprofile" style="display:none;margin-top:18px;">
+      <section id="editmypage" style="display:none;margin-top:18px;">
         <div class="flex">
         <!-- プロフィール編集フォーム -->
           <div style="flex:1; min-width:280px;">
@@ -143,6 +143,8 @@
     const editIconFile = document.getElementById("editIconFile");
     const saveProfileBtn = document.getElementById("saveProfileBtn");
     const saveMsg = document.getElementById("saveMsg");
+    const changeprofile = document.getElementById("changeprofile");
+    const editmypage = document.getElementById("editmypage");
 
     // ===== 画像を10MB以下に圧縮 =====
     async function compressImage(file, maxMB = 10) {
@@ -273,6 +275,16 @@
       logoutBtn.style.display = "inline-block";
       loadProfile();
     }
+
+    changeprofile.addEvenrListener("click", async () => {
+      changeprofile.style.display = "block"
+      
+    
+    })
+
+
+
+    
 
     // ===== プロフィール保存 =====
     saveProfileBtn.addEventListener("click", async () => {
