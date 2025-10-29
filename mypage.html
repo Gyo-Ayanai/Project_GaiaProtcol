@@ -22,6 +22,10 @@
       .small { font-size:0.9rem; color:#c9d9ff; }
       .muted { color:#aab8ff; font-size:0.9rem; }
       .error { color:#ffb3b3; }
+      .icon-choice-box { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 6px;}
+      .icon-choice { width: 64px; height: 64px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; transition: 0.2s; object-fit: cover;}
+      .icon-choice:hover { border-color: #888;}
+      .icon-choice.selected { border-color: #4b5eff; box-shadow: 0 0 6px #4b5eff;}
     </style>
   </head>
 <body>
@@ -95,8 +99,15 @@
             <label>自己紹介（日本語可）</label>
             <textarea id="editProfile" placeholder="自己紹介を入力"></textarea>
 
-            <label>アイコン画像を選択</label>
-            <input id="editIconFile" type="file" accept="image/icon/default_icon.png" />
+
+            <label>アイコンを選択</label>
+            <div id="iconChoices" class="icon-choice-box">
+              <img src="image/icon/icon1.png" class="icon-choice" data-url="image/icon/icon1.png">
+              <img src="image/icon/icon2.png" class="icon-choice" data-url="image/icon/icon2.png">
+              <img src="image/icon/icon3.png" class="icon-choice" data-url="image/icon/icon3.png">
+              <img src="image/icon/icon4.png" class="icon-choice" data-url="image/icon/icon4.png">
+                </div>
+            <input type="hidden" id="selectedIconUrl" value="">
 
             <div style="margin-top:10px;">
               <button id="saveProfileBtn">保存する</button>
@@ -143,7 +154,11 @@
     const saveMsg = document.getElementById("saveMsg");
     const changeprofile = document.getElementById("changeprofile");
     const editmypage = document.getElementById("editmypage");
+    // ===== アイコン選択処理 =====
+    const iconChoices = document.querySelectorAll(".icon-choice");
+    const selectedIconInput = document.getElementById("selectedIconUrl");
 
+    
    
     // Base64 エンコード
     function encodeUTF8Base64(str) {
@@ -252,6 +267,14 @@
     });
 
 
+    iconChoices.forEach(icon => {
+      icon.addEventListener("click", () => {
+        iconChoices.forEach(i => i.classList.remove("selected"));
+        icon.classList.add("selected");
+        selectedIconInput.value = icon.dataset.url;
+      });
+    });
+    
     
 
     // ===== プロフィール保存 =====
@@ -259,7 +282,7 @@
       saveMsg.style.display = "none";
       const nick = editNickname.value.trim();
       const prof = editProfile.value.trim();
-      const url = editIconUrl.value.trim();
+      const url = selectedIconInput.value.trim();
       const file = editIconFile.files[0];
 
       if (!nick) {
