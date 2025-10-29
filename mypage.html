@@ -214,7 +214,7 @@
         // 編集フォームに反映
         if (editNickname) editNickname.value = nick === "（未設定）" ? "" : nick;
         if (editProfile) editProfile.value = prof === "自己紹介がありません" ? "" : prof;
-        if (editIconUrl) editIconUrl.value = (icon && icon !== "image/icon/Icon0.PNG") ? icon : "";
+        if (selectedIconInput) selectedIconInput.value = icon;
 
         statusEl.textContent = "プロフィール表示中";
       }, (err) => {
@@ -284,7 +284,7 @@
       const nick = editNickname.value.trim();
       const prof = editProfile.value.trim();
       const url = selectedIconInput.value.trim();
-      const file = editIconFile.files[0];
+      
 
       if (!nick) {
         saveMsg.textContent = "ニックネームは必須です";
