@@ -316,6 +316,7 @@
           setTimeout(() => {
             editmypage.style.display = "none";
             loadProfile();
+            saveMsg.textContent = "";
           }, 700);
         }, (err) => {
           console.error("UpdateUserData error:", err);
