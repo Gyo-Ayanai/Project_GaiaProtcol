@@ -181,7 +181,7 @@
         showLogin();
         return;
       }
-      PlayFabClientSDK.GetUserData({ PlayFabId: playfabId }, (res) => {
+      PlayFabClientSDK.GetUserData({ }, (res) => {
         const data = (res.data && res.data.Data) || {};
         const nickB64 = data.nickname?.Value;
         const profB64 = data.profile?.Value;
