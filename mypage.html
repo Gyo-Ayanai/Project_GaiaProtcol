@@ -73,7 +73,7 @@
 
           <div>
             <button id="changeprofile">変更する</button>
-            <button id="logoutBtn" margin-left:8px; background:#777;">ログアウト</button>
+            <button id="logoutBtn" style="margin-left:8px; background:#777;">ログアウト</button>
           </div>
           
           
@@ -276,8 +276,8 @@
       loadProfile();
     }
 
-    changeprofile.addEvenrListener("click", async () => {
-      changeprofile.style.display = "block"
+    changeprofile.addEventListener("click", async () => {
+      editmypage.style.display = "block";
       
     
     })
@@ -328,7 +328,10 @@
           console.log("UpdateUserData success:", res);
           saveMsg.textContent = "保存しました！";
           statusEl.textContent = "プロフィールを保存しました";
-          setTimeout(loadProfile, 700);
+          setTimeout(() => {
+            editmypage.style.display = "none";
+            loadProfile();
+          }, 700);
         }, (err) => {
           console.error("UpdateUserData error:", err);
           saveMsg.textContent = "保存に失敗しました: " + (err?.errorMessage || JSON.stringify(err));
