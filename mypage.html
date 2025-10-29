@@ -148,8 +148,7 @@
 
     const editNickname = document.getElementById("editNickname");
     const editProfile = document.getElementById("editProfile");
-    const editIconUrl = document.getElementById("editIconUrl");
-    const editIconFile = document.getElementById("editIconFile");
+    
     const saveProfileBtn = document.getElementById("saveProfileBtn");
     const saveMsg = document.getElementById("saveMsg");
     const changeprofile = document.getElementById("changeprofile");
@@ -273,6 +272,7 @@
         iconChoices.forEach(i => i.classList.remove("selected"));
         icon.classList.add("selected");
         selectedIconInput.value = icon.dataset.url;
+        userIcon.src = icon.dataset.url;
       });
     });
     
