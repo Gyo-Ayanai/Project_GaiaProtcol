@@ -93,15 +93,11 @@
             <label>自己紹介（日本語可）</label>
             <textarea id="editProfile" placeholder="自己紹介を入力"></textarea>
 
-            <label>アイコン画像（外部URL）</label>
-            <input id="editIconUrl" type="text" placeholder="https://example.com/icon.png" />
-
-            <label>またはローカル画像をアップ</label>
+            <label>アイコン画像を選択</label>
             <input id="editIconFile" type="file" accept="image/*" />
 
             <div style="margin-top:10px;">
               <button id="saveProfileBtn">保存する</button>
-              <span class="small" style="margin-left:10px;">(画像は外部URL推奨／DataURLはサイズ制限あり)</span>
             </div>
 
             <div id="saveMsg" class="small" style="margin-top:8px; display:none;"></div>
@@ -146,74 +142,7 @@
     const changeprofile = document.getElementById("changeprofile");
     const editmypage = document.getElementById("editmypage");
 
-    // ===== 画像を10MB以下に圧縮 =====
-    async function compressImage(file, maxMB = 10) {
-      const img = await createImageBitmap(file);
-      const canvas = document.createElement("canvas");
-      const ctx = canvas.getContext("2d");
-      canvas.width = img.width;
-      canvas.height = img.height;
-      ctx.drawImage(img, 0, 0);
-
-      let quality = 0.95;
-      let blob;
-      do {
-        blob = await new Promise(r => canvas.toBlob(r, "image/jpeg", quality));
-        quality -= 0.05;
-      } while (blob.size > maxMB * 1024 * 1024 && quality > 0.1);
-
-      return blob;
-    }
-
-    // ===== PlayFab File Upload APIを使ってアップロード =====
-    async function uploadFileToPlayFab(file) {
-      return new Promise(async (resolve, reject) => {
-        try {
-          // ① 圧縮
-          const compressed = await compressImage(file, 10);
-          console.log("圧縮後サイズ:", (compressed.size / 1024 / 1024).toFixed(2), "MB");
-
-          // ② InitiateFileUploads 呼び出し
-          PlayFabClientSDK.InitiateFileUploads({
-            FileNames: ["user_icon.jpg"]
-          }, async (initRes, initErr) => {
-            if (initErr || !initRes?.data?.UploadDetails?.length) {
-              console.error("InitiateFileUploads error:", initErr);
-              reject("アップロードURLの取得に失敗しました。");
-              return;
-            }
-
-            const uploadUrl = initRes.data.UploadDetails[0].UploadUrl;
-            const fileName = initRes.data.UploadDetails[0].FileName;
-
-            // ③ 実際にファイルをPUTでアップロード
-            await fetch(uploadUrl, {
-              method: "PUT",
-              body: compressed,
-              headers: { "Content-Type": "image/jpeg" }
-            });
-
-            // ④ FinalizeFileUploads 呼び出し
-            PlayFabClientSDK.FinalizeFileUploads({ 
-              FileNames: [fileName]
-            }, (finRes, finErr) => {
-              if (finErr) {
-                console.error("FinalizeFileUploads error:", finErr);
-                reject("ファイルの確定に失敗しました。");
-                return;
-              }
-
-              const url = finRes.data.Metadata?.[fileName]?.DownloadUrl;
-              resolve(url || "");
-            });
-          });
-        } catch (e) {
-          console.error(e);
-          reject("画像アップロード中にエラーが発生しました。");
-        }
-      });
-    }
-
+   
     // Base64 エンコード
     function encodeUTF8Base64(str) {
       return btoa(unescape(encodeURIComponent(str)));
