@@ -202,7 +202,7 @@
         const nickB64 = data.nickname?.Value;
         const profB64 = data.profile?.Value;
         const level = data.level?.Value || "1";
-        const icon = data.icon_url?.Value || data.user_icon?.Value || "image/icon/Icon0.png";
+        const icon = data.icon_url?.Value || data.user_icon?.Value || "image/icon/Icon0.PNG";
 
         const nick = nickB64 ? decodeUTF8Base64(nickB64) : "（未設定）";
         const prof = profB64 ? decodeUTF8Base64(profB64) : "自己紹介がありません";
@@ -215,7 +215,7 @@
         // 編集フォームに反映
         if (editNickname) editNickname.value = nick === "（未設定）" ? "" : nick;
         if (editProfile) editProfile.value = prof === "自己紹介がありません" ? "" : prof;
-        if (editIconUrl) editIconUrl.value = (icon && icon !== "image/icon/Icon0.png") ? icon : "";
+        if (editIconUrl) editIconUrl.value = (icon && icon !== "image/icon/Icon0.PNG") ? icon : "";
 
         statusEl.textContent = "プロフィール表示中";
       }, (err) => {
