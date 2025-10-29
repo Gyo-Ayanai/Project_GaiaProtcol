@@ -171,7 +171,65 @@
       return localStorage.getItem(SESSION_KEY);
     }
     
-    // ===== 初期化：保存セッションがあれば自動ログイン状態にする =====
+
+    // ===== プロフィール読み込み =====
+    function loadProfile() {
+      statusEl.textContent = "プロフィール読み込み中...";
+      const playfabId = localStorage.getItem(PLAYFAB_ID_KEY);
+      if (!playfabId) {
+        statusEl.textContent = "PlayFab ID が見つかりません。再ログインしてください。";
+        showLogin();
+        return;
+      }
+      PlayFabClientSDK.GetUserData({ PlayFabId: playfabId }, (res) => {
+        const data = (res.data && res.data.Data) || {};
+        const nickB64 = data.nickname?.Value;
+        const profB64 = data.profile?.Value;
+        const level = data.level?.Value || "1";
+        const icon = data.icon_url?.Value || data.user_icon?.Value || "image/icon/default_icon.png";
+
+        const nick = nickB64 ? decodeUTF8Base64(nickB64) : "（未設定）";
+        const prof = profB64 ? decodeUTF8Base64(profB64) : "自己紹介がありません";
+
+        displayNickname.textContent = nick;
+        displayProfile.textContent = prof;
+        displayLevel.textContent = "Lv. " + level;
+        userIcon.src = icon;
+
+        // 編集フォームに反映
+        editNickname.value = nick === "（未設定）" ? "" : nick;
+        editProfile.value = prof === "自己紹介がありません" ? "" : prof;
+        editIconUrl.value = (icon && icon !== "image/icon/default_icon.png") ? icon : "";
+
+        statusEl.textContent = "プロフィール表示中";
+      }, (err) => {
+        console.error("GetUserData error:", err);
+        statusEl.textContent = "プロフィールの読み込みに失敗しました";
+      });
+    }
+
+
+    // ===== 表示切替 =====
+    function showLogin() {
+      loginPanel.style.display = "block";
+      mypagePanel.style.display = "none";
+      logoutBtn.style.display = "none";
+    }
+    function showMyPage() {
+      loginPanel.style.display = "none";
+      mypagePanel.style.display = "block";
+      logoutBtn.style.display = "inline-block";
+      loadProfile();
+    }
+
+    
+    changeprofile.addEventListener("click", async () => {
+      editmypage.style.display = "block";
+    })
+
+
+
+        // ===== 初期化：保存セッションがあれば自動ログイン状態にする =====
     window.addEventListener("load", () => {
       const ticket = getSavedSession();
       if (ticket) {
@@ -192,27 +250,6 @@
         showLogin();
       }
     });
-
-
-    // ===== 表示切替 =====
-    function showLogin() {
-      loginPanel.style.display = "block";
-      mypagePanel.style.display = "none";
-      logoutBtn.style.display = "none";
-    }
-    function showMyPage() {
-      loginPanel.style.display = "none";
-      mypagePanel.style.display = "block";
-      logoutBtn.style.display = "inline-block";
-      loadProfile();
-    }
-
-    changeprofile.addEventListener("click", async () => {
-      editmypage.style.display = "block";
-      
-    
-    })
-
 
 
     
@@ -312,42 +349,6 @@
       statusEl.textContent = "ログアウトしました";
       showLogin();
     });
-
-    // ===== プロフィール読み込み =====
-    function loadProfile() {
-      statusEl.textContent = "プロフィール読み込み中...";
-      const playfabId = localStorage.getItem(PLAYFAB_ID_KEY);
-      if (!playfabId) {
-        statusEl.textContent = "PlayFab ID が見つかりません。再ログインしてください。";
-        showLogin();
-        return;
-      }
-      PlayFabClientSDK.GetUserData({ PlayFabId: playfabId }, (res) => {
-        const data = (res.data && res.data.Data) || {};
-        const nickB64 = data.nickname?.Value;
-        const profB64 = data.profile?.Value;
-        const level = data.level?.Value || "1";
-        const icon = data.icon_url?.Value || data.user_icon?.Value || "image/icon/default_icon.png";
-
-        const nick = nickB64 ? decodeUTF8Base64(nickB64) : "（未設定）";
-        const prof = profB64 ? decodeUTF8Base64(profB64) : "自己紹介がありません";
-
-        displayNickname.textContent = nick;
-        displayProfile.textContent = prof;
-        displayLevel.textContent = "Lv. " + level;
-        userIcon.src = icon;
-
-        // 編集フォームに反映
-        editNickname.value = nick === "（未設定）" ? "" : nick;
-        editProfile.value = prof === "自己紹介がありません" ? "" : prof;
-        editIconUrl.value = (icon && icon !== "image/icon/default_icon.png") ? icon : "";
-
-        statusEl.textContent = "プロフィール表示中";
-      }, (err) => {
-        console.error("GetUserData error:", err);
-        statusEl.textContent = "プロフィールの読み込みに失敗しました";
-      });
-    }
   </script>
 </body>
 </html>
