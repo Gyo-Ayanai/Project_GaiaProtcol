@@ -71,7 +71,7 @@
         <div class="flex">
           <!-- プロフィール表示 -->
           <div class="profile-box">
-            <img id="userIcon" class="icon" src="image/icon/default_icon.png" alt="アイコン" />
+            <img id="userIcon" class="icon" src="image/icon/Icon0.png" alt="アイコン" />
             <h3 id="displayNickname">—</h3>
             <p id="displayProfile" class="muted">自己紹介がありません</p>
             <div style="margin-top:8px;"><strong id="displayLevel">Lv. 1</strong></div>
@@ -102,10 +102,10 @@
 
             <label>アイコンを選択</label>
             <div id="iconChoices" class="icon-choice-box">
-              <img src="image/icon/icon1.png" class="icon-choice" data-url="image/icon/icon1.png">
-              <img src="image/icon/icon2.png" class="icon-choice" data-url="image/icon/icon2.png">
-              <img src="image/icon/icon3.png" class="icon-choice" data-url="image/icon/icon3.png">
-              <img src="image/icon/icon4.png" class="icon-choice" data-url="image/icon/icon4.png">
+              <img src="image/icon/Icon0.png" class="icon-choice" data-url="image/icon/Icon0.png">
+              <img src="image/icon/Icon1.png" class="icon-choice" data-url="image/icon/Icon1.png">
+              <img src="image/icon/Icon2.png" class="icon-choice" data-url="image/icon/Icon2.png">
+              <img src="image/icon/Icon2.png" class="icon-choice" data-url="image/icon/Icon2.png">
                 </div>
             <input type="hidden" id="selectedIconUrl" value="">
 
@@ -201,7 +201,7 @@
         const nickB64 = data.nickname?.Value;
         const profB64 = data.profile?.Value;
         const level = data.level?.Value || "1";
-        const icon = data.icon_url?.Value || data.user_icon?.Value || "image/icon/default_icon.png";
+        const icon = data.icon_url?.Value || data.user_icon?.Value || "image/icon/Icon0.png";
 
         const nick = nickB64 ? decodeUTF8Base64(nickB64) : "（未設定）";
         const prof = profB64 ? decodeUTF8Base64(profB64) : "自己紹介がありません";
@@ -214,7 +214,7 @@
         // 編集フォームに反映
         if (editNickname) editNickname.value = nick === "（未設定）" ? "" : nick;
         if (editProfile) editProfile.value = prof === "自己紹介がありません" ? "" : prof;
-        if (editIconUrl) editIconUrl.value = (icon && icon !== "image/icon/default_icon.png") ? icon : "";
+        if (editIconUrl) editIconUrl.value = (icon && icon !== "image/icon/Icon0.png") ? icon : "";
 
         statusEl.textContent = "プロフィール表示中";
       }, (err) => {
@@ -302,13 +302,6 @@
 
       try {
         let finalIconUrl = url;
-
-          // ファイルがある場合はPlayFabにアップロード
-        if (file && !url) {
-          saveMsg.textContent = "画像アップロード中...";
-          finalIconUrl = await uploadFileToPlayFab(file);
-          console.log("アップロード完了URL:", finalIconUrl);
-        }
 
         if (finalIconUrl) {
           dataToSave.icon_url = finalIconUrl;
