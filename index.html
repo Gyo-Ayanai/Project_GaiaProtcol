@@ -6,6 +6,29 @@
     <title>Gaia Protocol - ホーム</title>
     <link rel="stylesheet" href="style.css">
     <style>
+      body {
+        background: radial-gradient(circle at center, #030787, #000);
+        color: #fff;
+        font-family: "Segoe UI", sans-serif;
+        text-align: center;
+        margin: 0;
+        padding: 0;
+      }
+      header, footer {
+        background: rgba(10,10,30,0.8);
+        padding: 12px 20px;
+      }
+      .menu {
+        list-style: none;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        gap: 16px;
+      }
+      .menu a {
+        color: #fff;
+        text-decoration: none;
+      }
       .image-button {
         position: relative;
         width: 160px;
@@ -51,11 +74,13 @@
       <h1>Gaia Protocolへようこそ！</h1>
       <p>ここでは私たちの開発するゲームの紹介や最新情報をお届けします。</p>
       <img src="image/other/game_main.png" alt="ゲームアイコン" width="400">
-      <p>
+      <p style="margin-top: 20px;">
         <a href="preregister_form.html" target="_blank">
           <button class="image-button">
-            <img src="image/other/Button_image.PNG" class="base">
-            <img src="image/other/way.MP4" class="overlay" repeat>
+            <img src="image/other/Button_image.PNG" class="base" alt="ボタン背景">
+            <video class="overlay" autoplay loop muted playsinline>
+              <source src="image/other/way.MP4" type="video/mp4">
+            </video>
             <span class="text">事前登録する</span>
           </button>
         </a>
@@ -64,7 +89,9 @@
       <p style="margin-top: 40px;">
         <a href="preregister_form.html" target="_blank">
           <button>事前登録する</button>
-        </main>
+        </a>
+      </p>
+    </main>
 
     <footer>
       <p>© 2025 Gaia Protocol</p>
