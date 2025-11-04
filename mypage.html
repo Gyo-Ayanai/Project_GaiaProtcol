@@ -255,6 +255,9 @@
           // 有効なセッション
           statusEl.textContent = "ログイン済みです";
 
+          if (res.data?.AccountInfo?.PlayFabId) {
+            localStorage.setItem(PLAYFAB_ID_KEY, res.data.AccountInfo.PlayFabId);
+          }
           // セッションが完全に有効になってからプロフィール読み込み
           setTimeout(() => {
             showMyPage();
