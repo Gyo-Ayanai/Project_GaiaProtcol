@@ -254,7 +254,17 @@
         PlayFabClientSDK.GetAccountInfo({}, (res) => {
           // 有効なセッション
           statusEl.textContent = "ログイン済みです";
-          showMyPage();
+
+          // PlayFab ID を確実に保存
+          if (res.data?.AccountInfo?.PlayFabId) {
+            localStorage.setItem(PLAYFAB_ID_KEY, res.data.AccountInfo.PlayFabId);
+          }
+
+          // セッションが完全に有効になってからプロフィール読み込み
+          setTimeout(() => {
+            showMyPage();
+            loadProfile();
+          }, 300); // ← 少し遅らせることでセッション反映を確実に
         }, (err) => {
           console.warn("保存セッション無効:", err);
           clearSession();
