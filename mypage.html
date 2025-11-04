@@ -249,18 +249,12 @@
       const ticket = getSavedSession();
       if (ticket) {
         statusEl.textContent = "自動ログインを試行しています...";
-        PlayFab.settings.titleId = "1FEC7E";
-        PlayFab._internalSettings.sessionTicket = ticket;  //here
+        PlayFab.internalSettings.sessionTicket = ticket;  //here
         // 確認のため GetAccountInfo を呼んで当たり判定（軽い）
         PlayFabClientSDK.GetAccountInfo({}, (res) => {
           // 有効なセッション
           statusEl.textContent = "ログイン済みです";
 
-          if (res.data?.AccountInfo?.PlayFabId) {
-            localStorage.setItem(PLAYFAB_ID_KEY, res.data.AccountInfo.PlayFabId);
-          }
-          PlayFab.settings.titleId = "1FEC7E";
-          PlayFab._internalSettings.sessionTicket = ticket;
           // セッションが完全に有効になってからプロフィール読み込み
           setTimeout(() => {
             showMyPage();
