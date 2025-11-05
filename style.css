@@ -1,9 +1,10 @@
 /* 🌍 全体共通 */
+//本文
 body {
   margin: 0;
   padding: 0;
-  font-family: "Noto Sans JP", sans-serif;
-  color: #e0e7ff;
+  font-family: "Segoe UI", sans-serif;
+  color: #333;
   background: radial-gradient(circle at top, #0a0a1f, #000);
   background-attachment: fixed;
   overflow-x: hidden;
@@ -43,13 +44,42 @@ header {
   text-shadow: 0 0 8px #7fc9ff;
 }
 
+nav ul {
+  display: flex;
+  justify-content: center;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+nav ul li {
+  margin: 0 15px;
+}
+
+nav ul li a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+nav ul li a.active {
+  text-decoration: underline;
+}
+
 /* 🌠 メイン */
 main {
   width: 80%;
   max-width: 800px;
   margin: 100px auto;
   text-align: center;
+  padding: 40px 20px;
 }
+
+h1 {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
 
 /* 🌌 フッター */
 footer {
@@ -62,4 +92,47 @@ footer {
   border-top: 1px solid rgba(100, 150, 255, 0.2);
   position: relative;
   z-index: 5;
+}
+
+
+//teamの設定
+.member {
+  display: flex; 
+  align-items: center; 
+  background: rgba(255, 255, 255, 0.05); 
+  border-radius: 12px;
+  padding: 20px;
+  margin: 20px auto;
+  max-width: 600px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  gap: 20px; /* アイコンとテキストの間 */
+}
+
+
+.member img {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  margin-right: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.member h2 {
+  margin: 0;
+  font-size: 1.3rem;
+  color: #00750d;
+}
+
+.member p {
+  margin: 5px 0 0;
+  color: #000000;
+  text-align: left;
+  line-height: 1.5;
+  word-break: break-word;
+}
+    
+.member .info {
+  flex: 1;
 }
