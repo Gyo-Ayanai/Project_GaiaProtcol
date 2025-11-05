@@ -1,4 +1,3 @@
-/* 🌍 全体共通 */
 //本文
 body {
   margin: 0;
@@ -9,9 +8,6 @@ body {
   background-attachment: fixed;
   overflow-x: hidden;
 }
-
-
-/* 🚀 ヘッダー */
 header {
   background: rgba(10, 10, 40, 0.8);
   border-bottom: 1px solid rgba(100, 150, 255, 0.3);
@@ -20,7 +16,6 @@ header {
   z-index: 10;
   backdrop-filter: blur(6px);
 }
-
 .menu {
   list-style: none;
   display: flex;
@@ -29,7 +24,6 @@ header {
   margin: 0;
   padding: 16px 0;
 }
-
 .menu a {
   color: #a8c5ff;
   text-decoration: none;
@@ -37,13 +31,11 @@ header {
   letter-spacing: 0.05em;
   transition: color 0.3s, text-shadow 0.3s;
 }
-
 .menu a:hover,
 .menu a.active {
   color: #ffffff;
   text-shadow: 0 0 8px #7fc9ff;
 }
-
 nav ul {
   display: flex;
   justify-content: center;
@@ -51,22 +43,17 @@ nav ul {
   margin: 0;
   padding: 0;
 }
-
 nav ul li {
   margin: 0 15px;
 }
-
 nav ul li a {
   color: #fff;
   text-decoration: none;
   font-weight: bold;
 }
-
 nav ul li a.active {
   text-decoration: underline;
 }
-
-/* 🌠 メイン */
 main {
   width: 80%;
   max-width: 800px;
@@ -74,14 +61,10 @@ main {
   text-align: center;
   padding: 40px 20px;
 }
-
 h1 {
   text-align: center;
   margin-bottom: 40px;
 }
-
-
-/* 🌌 フッター */
 footer {
   margin-top: 80px;
   padding: 20px;
@@ -93,6 +76,8 @@ footer {
   position: relative;
   z-index: 5;
 }
+
+
 
 
 //teamの設定
@@ -107,8 +92,6 @@ footer {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
   gap: 20px; /* アイコンとテキストの間 */
 }
-
-
 .member img {
   width: 100px;
   height: 100px;
@@ -118,13 +101,11 @@ footer {
   margin-right: 20px;
   border: 2px solid rgba(255, 255, 255, 0.3);
 }
-
 .member h2 {
   margin: 0;
   font-size: 1.3rem;
   color: #00750d;
 }
-
 .member p {
   margin: 5px 0 0;
   color: #000000;
@@ -132,7 +113,58 @@ footer {
   line-height: 1.5;
   word-break: break-word;
 }
-    
 .member .info {
   flex: 1;
+}
+
+
+//index
+.image-button {
+  position: relative;
+  width: 240px;
+  height: 70px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  overflow: visible;
+}
+.image-button img.base {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 10px;
+}
+.image-button .overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.6;
+  pointer-events: none;
+  border-radius: 10px;
+}
+.image-button .text {
+  position: absolute;
+  bottom: 12px;
+  right: 50px;
+  color: white;
+  font-weight: bold;
+  font-size: 1.3rem;
+  text-shadow: 0 0 6px #000;
+}
+.arrow {
+  position: absolute;
+  top: 50%;
+  right: -45px;
+  transform: translateY(-50%);
+  width: 100px;
+  height: 100px;
+  animation: arrowMove 1.5s ease-in-out infinite;
+  transform-origin: center;
+}
+@keyframes arrowMove {
+  0%   { transform: translateY(-65%) rotate(0deg)    translateX(0);  opacity:1; }
+  50%  { transform: translateY(-65%) rotate(60deg)  translateX(0); opacity:1; } /* 半回転 */
+  100% { transform: translateY(-65%) rotate(0deg)    translateX(0);   opacity:1; }
 }
