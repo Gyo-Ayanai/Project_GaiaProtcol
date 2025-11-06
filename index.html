@@ -21,24 +21,14 @@
         object-fit: cover;
         border-radius: 10px;
       }
-      .image-button .overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        opacity: 0.6;
-        pointer-events: none;
-        border-radius: 10px;
-      }
       .image-button .text {
         position: absolute;
-        bottom: 12px;
-        right: 50px;
+        bottom: 15px;
+        right: 60px;
         color: white;
         font-weight: bold;
-        font-size: 1.3rem;
-        text-shadow: 0 0 6px #000;
+        font-size: 1.5rem;
+        text-shadow: 1 0 6px #000;
       }
       .arrow {
         position: absolute;
@@ -83,10 +73,14 @@
           </button>
         </a>
       </p>
-      <img src="image/game_main.jpg" alt="ゲーム画像2" width="400">
+      <img src="image/other/game_main.png" alt="ゲーム画像2" width="400">
       <p style="margin-top: 40px;">
         <a href="preregister_form.html" target="_blank">
-          <button>事前登録する</button>
+          <button class="image-button">
+            <img src="image/other/Button_image.PNG" class="base" alt="ボタン背景">
+            <span class="text">事前登録する</span>
+            <img src="image/other/arrow.png" class="arrow" alt="→"> 
+          </button>
         </a>
       </p>
     </main>
